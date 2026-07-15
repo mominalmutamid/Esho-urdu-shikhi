@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="bn" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<title>এসো উর্দু শিখি</title>
+<meta name="description" content="উর্দু বানান, শব্দার্থ ও কাব্যিক শব্দভাণ্ডার শেখার একটি হালকা, গেমিফায়েড PWA">
+<meta name="theme-color" content="#1B2A4A">
+
+<link rel="manifest" href="./manifest.json">
+<link rel="icon" href="./icons/icon-192.png">
+<link rel="apple-touch-icon" href="./icons/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="উর্দু শিখি">
+<meta name="mobile-web-app-capable" content="yes">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&family=Noto+Naskh+Arabic:wght@400;700&family=Hind+Siliguri:wght@400;500;600;700&family=Noto+Serif+Bengali:wght@400;500&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+<div id="app">
+
+  <!-- ================= HOME ================= -->
+  <section id="view-home" class="view is-active">
+    <div class="home-hero">
+      <div class="home-hero-top">
+        <div>
+          <span class="eyebrow">এসো</span>
+          <h1 class="app-title">উর্দু শিখি
+            <span class="urdu-display">اردو سیکھیں</span>
+          </h1>
+        </div>
+        <div class="streak-pill">
+          <span class="streak-flame" id="streak-flame">🔥</span>
+          <span id="streak-count">0</span>
+        </div>
+      </div>
+
+      <div class="wod-wrap" id="wod-wrap">
+        <span class="wod-label">আজকের শব্দ</span>
+      </div>
+    </div>
+
+    <div class="day-strip" id="day-strip"></div>
+
+    <div class="home-section">
+      <h2 class="section-title">মোড বেছে নিন</h2>
+      <div class="mode-grid">
+        <button class="mode-card" data-goto="spelling">
+          <span class="glyph">✍️</span>
+          <span class="title">বানান ও পঠন</span>
+          <span class="desc">শুনে বানান করো, কুইজ দাও</span>
+        </button>
+        <button class="mode-card" data-goto="study">
+          <span class="glyph">📖</span>
+          <span class="title">শব্দার্থ চর্চা</span>
+          <span class="desc">অর্থ, উচ্চারণ ও বিপরীত শব্দ</span>
+        </button>
+        <button class="mode-card" data-goto="poetic">
+          <span class="glyph">🖋️</span>
+          <span class="title">কাব্যিক শব্দমালা</span>
+          <span class="desc">গভীর অর্থের শব্দ ও প্রবাদ</span>
+        </button>
+        <button class="mode-card" data-goto="visual">
+          <span class="glyph">🖼️</span>
+          <span class="title">দৃশ্যভিত্তিক মোড</span>
+          <span class="desc">ছবিতে ট্যাপ করে শব্দ শেখো</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= SPELLING & READING ================= -->
+  <section id="view-spelling" class="view spelling-view">
+    <div class="topbar"><h1>বানান ও পঠন মোড</h1><span></span></div>
+    <div class="subtab-row">
+      <button class="subtab is-active" data-subtab="spell">বানান করো</button>
+      <button class="subtab" data-subtab="quiz">পঠন কুইজ</button>
+    </div>
+    <div id="spelling-panel"></div>
+    <div id="quiz-panel" style="display:none"></div>
+  </section>
+
+  <!-- ================= STUDY (SIDE-BY-SIDE) ================= -->
+  <section id="view-study" class="view">
+    <div class="topbar"><h1>শব্দার্থ ও বিপরীত শব্দ</h1><span></span></div>
+    <div class="study-filterbar" id="study-filterbar"></div>
+    <div class="study-stage" id="study-stage"></div>
+    <div class="study-nav">
+      <button class="btn btn-outline" id="study-prev">← আগে</button>
+      <span class="study-counter" id="study-counter"></span>
+      <button class="btn btn-outline" id="study-next">পরে →</button>
+    </div>
+  </section>
+
+  <!-- ================= POETIC (DIARY PAGE) ================= -->
+  <section id="view-poetic" class="view poetic-view">
+    <div class="topbar"><h1>কাব্যিক ও গভীর শব্দমালা</h1><span></span></div>
+    <div class="diary-page">
+      <div class="diary-inner" id="diary-inner"></div>
+    </div>
+    <div class="diary-nav">
+      <button class="btn btn-ghost" id="poetic-prev" aria-label="আগের শব্দ">◀</button>
+      <div class="diary-dots" id="diary-dots"></div>
+      <button class="btn btn-ghost" id="poetic-next" aria-label="পরের শব্দ">▶</button>
+    </div>
+  </section>
+
+  <!-- ================= MY LIBRARY ================= -->
+  <section id="view-library" class="view">
+    <div class="topbar"><h1>আমার লাইব্রেরি</h1><span></span></div>
+    <div class="content-pad" id="library-stats"></div>
+    <div id="library-content"></div>
+  </section>
+
+  <!-- ================= VISUAL VOCABULARY ================= -->
+  <section id="view-visual" class="view">
+    <div class="topbar"><h1>দৃশ্যভিত্তিক মোড</h1><span></span></div>
+    <div class="scene-tabs" id="scene-tabs"></div>
+    <div class="scene-stage" id="scene-stage"></div>
+    <p class="content-pad" style="font-size:0.8rem;color:var(--muted);text-align:center">ছবির উপর ট্যাপ করে শব্দ শেখো</p>
+  </section>
+
+  <nav class="nav-spine" id="nav-spine">
+    <button class="nav-item is-active" data-view="home"><span class="nav-glyph">🏠</span>হোম</button>
+    <button class="nav-item" data-view="spelling"><span class="nav-glyph">✍️</span>বানান</button>
+    <button class="nav-item" data-view="study"><span class="nav-glyph">📖</span>শব্দার্থ</button>
+    <button class="nav-item" data-view="poetic"><span class="nav-glyph">🖋️</span>কাব্যিক</button>
+    <button class="nav-item" data-view="library"><span class="nav-glyph">📚</span>লাইব্রেরি</button>
+    <button class="nav-item" data-view="visual"><span class="nav-glyph">🖼️</span>দৃশ্য</button>
+  </nav>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="./js/app.js"></script>
+</body>
+</html>
