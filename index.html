@@ -31,7 +31,7 @@
    Tokens
      --ink          : night indigo (poetic mode, hero, nav)
      --parchment    : aged manuscript page (study / spelling / library)
-     --gold         : antique gold leaf (accents, unlock, streak)
+     --gold         : antique gold leaf (accents, unlock moments)
      --gulnar       : pomegranate red (antonyms, incorrect state)
      --zamurrud     : emerald (correct state, active nav)
    ========================================================================== */
@@ -189,16 +189,17 @@ img, svg { display: block; max-width: 100%; }
 .nav-item {
   flex: 1;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 3px;
+  padding: 6px 2px;
   color: var(--muted-on-ink);
-  font-size: 0.62rem;
+  font-family: var(--font-bn);
+  font-size: 0.76rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
   position: relative;
   transition: color 0.2s ease;
 }
-.nav-item .nav-glyph { font-size: 1.2rem; line-height: 1; }
 .nav-item.is-active { color: var(--gold-soft); }
 .nav-item.is-active::before {
   content: "";
@@ -245,76 +246,69 @@ img, svg { display: block; max-width: 100%; }
   display: block;
   margin-top: 2px;
 }
-.streak-pill {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  background: rgba(255,255,255,0.08);
-  border: 1px solid rgba(201,162,39,0.3);
-  border-radius: 999px;
-  padding: 7px 13px;
-  font-weight: 600;
-  font-size: 0.9rem;
+/* Word-of-day heading — plain, non-absolute block (fixes the earlier
+   clipped/overlapping pill-label layout bug). */
+.wod-heading {
+  text-align: center;
+  position: relative;
+  z-index: 1;
+  margin-top: 4px;
 }
-.streak-flame { display: inline-block; }
-@keyframes flicker {
-  0%, 100% { transform: scale(1) rotate(-2deg); }
-  50% { transform: scale(1.08) rotate(2deg); }
+.wod-heading .label-bn {
+  display: inline-block;
+  font-family: var(--font-bn);
+  font-size: 0.98rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--gold-soft);
+  padding-bottom: 9px;
+  border-bottom: 1px solid rgba(201,162,39,0.4);
+  line-height: 1.4;
 }
-.streak-flame.is-active { animation: flicker 1.6s ease-in-out infinite; }
 
-/* Word-of-day seal + card */
 .wod-wrap {
   position: relative;
-  margin-top: 22px;
-  min-height: 210px;
+  margin-top: 18px;
+  min-height: 200px;
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1;
 }
-.wod-label {
-  position: absolute;
-  top: -10px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 0.72rem;
-  color: var(--gold-soft);
-  letter-spacing: 0.12em;
-  background: var(--ink);
-  padding: 2px 12px;
-  border-radius: 999px;
-  border: 1px solid rgba(201,162,39,0.35);
-}
 
 .seal {
-  width: 118px;
-  height: 118px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, var(--gold-soft), var(--gold) 55%, #8a6c17 100%);
-  box-shadow: 0 0 0 6px rgba(201,162,39,0.15), var(--shadow-ink);
+  width: 172px;
+  min-height: 150px;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(160deg, var(--gold-soft), var(--gold) 62%, #8a6c17 100%);
+  box-shadow: 0 0 0 6px rgba(201,162,39,0.14), var(--shadow-ink);
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-size: 2rem;
+  gap: 7px;
+  padding: 22px 16px;
   color: var(--ink);
   position: relative;
+  text-align: center;
+}
+.seal .seal-title {
+  font-family: var(--font-bn);
+  font-weight: 700;
+  font-size: 1.02rem;
 }
 .seal .seal-hint {
-  position: absolute;
-  bottom: -34px;
-  font-size: 0.75rem;
-  color: var(--muted-on-ink);
+  font-size: 0.8rem;
   font-weight: 500;
-  white-space: nowrap;
+  color: rgba(27,42,74,0.72);
 }
 .seal.is-cracking {
   animation: sealPulse 0.4s ease-out forwards;
 }
 @keyframes sealPulse {
   0% { transform: scale(1); }
-  40% { transform: scale(1.12); }
-  100% { transform: scale(1.28); opacity: 0; }
+  40% { transform: scale(1.08); }
+  100% { transform: scale(1.2); opacity: 0; }
 }
 
 .wod-card {
@@ -396,20 +390,10 @@ img, svg { display: block; max-width: 100%; }
   50% { box-shadow: 0 0 0 6px rgba(201,162,39,0); }
 }
 .day-chip.locked {
-  filter: blur(1.5px);
-  opacity: 0.55;
+  filter: blur(2px);
+  opacity: 0.45;
+  border-style: dashed;
   color: transparent;
-}
-.day-chip.locked::after {
-  content: "🔒";
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  filter: none;
-  font-size: 0.85rem;
-  color: var(--muted);
 }
 
 .home-section {
@@ -436,7 +420,6 @@ img, svg { display: block; max-width: 100%; }
   flex-direction: column;
   gap: 6px;
 }
-.mode-card .glyph { font-size: 1.4rem; }
 .mode-card .title { font-weight: 700; font-size: 0.88rem; color: var(--ink); }
 .mode-card .desc { font-size: 0.74rem; color: var(--muted); line-height: 1.4; }
 
@@ -549,6 +532,7 @@ img, svg { display: block; max-width: 100%; }
   color: var(--gulnar);
 }
 .study-card .antonym-row .urdu { font-size: 1.1rem; }
+.study-card .speak-link { align-self: center; }
 .study-nav {
   display: flex;
   align-items: center;
@@ -571,17 +555,7 @@ img, svg { display: block; max-width: 100%; }
 }
 .prompt-card .meaning { font-size: 1.15rem; font-weight: 700; margin-bottom: 4px; }
 .prompt-card .translit-hint { color: var(--muted); font-size: 0.82rem; }
-.speak-btn {
-  margin-top: 10px;
-  width: 42px; height: 42px;
-  border-radius: 50%;
-  background: var(--ink);
-  color: var(--gold-soft);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.1rem;
-}
+.prompt-card .speak-link { margin-top: 12px; }
 
 .answer-slot {
   min-height: 62px;
@@ -778,73 +752,79 @@ img, svg { display: block; max-width: 100%; }
 .lib-card .date { font-size: 0.65rem; color: var(--gold); margin-top: 6px; }
 
 /* --------------------------------------------------------------------------
-   Visual vocabulary
+   Text-based audio button (replaces the old icon speaker button everywhere)
    -------------------------------------------------------------------------- */
-.scene-tabs { display: flex; gap: 8px; padding: 4px 20px 12px; }
-.scene-tab {
-  flex: 1;
-  padding: 10px;
-  text-align: center;
-  border-radius: var(--radius-sm);
-  border: 1.5px solid var(--parchment-line);
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--muted);
-  background: var(--parchment-2);
+.speak-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-bn);
+  font-weight: 700;
+  font-size: 0.82rem;
+  letter-spacing: 0.02em;
+  color: var(--ink);
+  background: transparent;
+  border: 1.5px solid var(--ink);
+  border-radius: 999px;
+  padding: 8px 18px;
 }
-.scene-tab.is-active { background: var(--ink); color: #fff; border-color: var(--ink); }
+.speak-link:active { background: var(--ink); color: #fff; }
+.speak-link.on-dark {
+  color: var(--gold-soft);
+  border-color: rgba(228,199,105,0.5);
+}
+.speak-link.on-dark:active { background: rgba(228,199,105,0.15); }
 
-.scene-stage {
-  position: relative;
-  margin: 0 20px 16px;
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  aspect-ratio: 4 / 5;
-  box-shadow: var(--shadow-card);
-}
-.scene-stage svg { width: 100%; height: 100%; }
-.hotspot {
-  position: absolute;
-  width: 34px; height: 34px;
-  margin: -17px 0 0 -17px;
-  border-radius: 50%;
-  background: rgba(201,162,39,0.85);
-  border: 2px solid #fff;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.35);
+/* Mode-card text badge — replaces the old emoji glyph */
+.mode-badge {
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-sm);
+  background: var(--ink);
+  color: var(--gold-soft);
+  font-family: var(--font-bn);
+  font-weight: 700;
+  font-size: 0.92rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--ink);
-  font-size: 0.95rem;
-  font-weight: 700;
-  animation: hotspotPulse 2.2s ease-in-out infinite;
 }
-@keyframes hotspotPulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(201,162,39,0.5), 0 2px 8px rgba(0,0,0,0.35); }
-  50% { box-shadow: 0 0 0 8px rgba(201,162,39,0), 0 2px 8px rgba(0,0,0,0.35); }
-}
-.hotspot.is-seen { background: rgba(31,102,80,0.85); }
 
-.scene-popover-backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(20,25,40,0.55);
-  z-index: 70;
-  display: flex;
-  align-items: flex-end;
+/* Locked-state text tag */
+.locked-tag {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  border: 1px solid var(--parchment-line);
+  border-radius: 999px;
+  padding: 2px 9px;
 }
-.scene-popover {
-  width: 100%;
+
+/* --------------------------------------------------------------------------
+   Urdu Alphabet Mode
+   -------------------------------------------------------------------------- */
+.alphabet-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  padding: 4px 20px 20px;
+}
+.alphabet-cell {
   background: var(--parchment-2);
-  border-radius: 22px 22px 0 0;
-  padding: 22px 22px calc(22px + var(--safe-b));
+  border: 1px solid var(--parchment-line);
+  border-radius: var(--radius-md);
+  padding: 16px 10px 14px;
   text-align: center;
-  animation: sheetUp 0.28s ease-out;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
 }
-@keyframes sheetUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-.scene-popover .urdu-display { font-size: 2.2rem; color: var(--ink); }
-.scene-popover .meaning { font-size: 1.1rem; font-weight: 700; margin: 8px 0 4px; }
-.scene-popover .translit { color: var(--muted); font-size: 0.85rem; margin-bottom: 16px; }
+.alphabet-cell .urdu { font-size: 2rem; color: var(--ink); line-height: 1; }
+.alphabet-cell .name-bn { font-weight: 700; font-size: 0.85rem; color: var(--ink); }
+.alphabet-cell .sound-bn { font-size: 0.68rem; color: var(--muted); line-height: 1.4; min-height: 2.4em; }
+.alphabet-cell .speak-link { padding: 6px 14px; font-size: 0.72rem; margin-top: 2px; }
 
 /* --------------------------------------------------------------------------
    Reduced motion
@@ -862,6 +842,7 @@ img, svg { display: block; max-width: 100%; }
 }
 
 </style>
+<script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body>
 <div id="app">
@@ -876,15 +857,12 @@ img, svg { display: block; max-width: 100%; }
             <span class="urdu-display">اردو سیکھیں</span>
           </h1>
         </div>
-        <div class="streak-pill">
-          <span class="streak-flame" id="streak-flame">🔥</span>
-          <span id="streak-count">0</span>
-        </div>
       </div>
 
-      <div class="wod-wrap" id="wod-wrap">
-        <span class="wod-label">আজকের শব্দ</span>
+      <div class="wod-heading">
+        <span class="label-bn">আজকের শব্দ</span>
       </div>
+      <div class="wod-wrap" id="wod-wrap"></div>
     </div>
 
     <div class="day-strip" id="day-strip"></div>
@@ -893,24 +871,24 @@ img, svg { display: block; max-width: 100%; }
       <h2 class="section-title">মোড বেছে নিন</h2>
       <div class="mode-grid">
         <button class="mode-card" data-goto="spelling">
-          <span class="glyph">✍️</span>
+          <span class="mode-badge">১</span>
           <span class="title">বানান ও পঠন</span>
           <span class="desc">শুনে বানান করো, কুইজ দাও</span>
         </button>
         <button class="mode-card" data-goto="study">
-          <span class="glyph">📖</span>
+          <span class="mode-badge">২</span>
           <span class="title">শব্দার্থ চর্চা</span>
           <span class="desc">অর্থ, উচ্চারণ ও বিপরীত শব্দ</span>
         </button>
         <button class="mode-card" data-goto="poetic">
-          <span class="glyph">🖋️</span>
+          <span class="mode-badge">৩</span>
           <span class="title">কাব্যিক শব্দমালা</span>
           <span class="desc">গভীর অর্থের শব্দ ও প্রবাদ</span>
         </button>
-        <button class="mode-card" data-goto="visual">
-          <span class="glyph">🖼️</span>
-          <span class="title">দৃশ্যভিত্তিক মোড</span>
-          <span class="desc">ছবিতে ট্যাপ করে শব্দ শেখো</span>
+        <button class="mode-card" data-goto="alphabet">
+          <span class="mode-badge">৪</span>
+          <span class="title">উর্দু অক্ষর মোড</span>
+          <span class="desc">বর্ণমালা চেনো ও উচ্চারণ শোনো</span>
         </button>
       </div>
     </div>
@@ -933,9 +911,9 @@ img, svg { display: block; max-width: 100%; }
     <div class="study-filterbar" id="study-filterbar"></div>
     <div class="study-stage" id="study-stage"></div>
     <div class="study-nav">
-      <button class="btn btn-outline" id="study-prev">← আগে</button>
+      <button class="btn btn-outline" id="study-prev">পূর্ববর্তী</button>
       <span class="study-counter" id="study-counter"></span>
-      <button class="btn btn-outline" id="study-next">পরে →</button>
+      <button class="btn btn-outline" id="study-next">পরবর্তী</button>
     </div>
   </section>
 
@@ -946,9 +924,9 @@ img, svg { display: block; max-width: 100%; }
       <div class="diary-inner" id="diary-inner"></div>
     </div>
     <div class="diary-nav">
-      <button class="btn btn-ghost" id="poetic-prev" aria-label="আগের শব্দ">◀</button>
+      <button class="btn btn-ghost" id="poetic-prev" aria-label="আগের শব্দ">পূর্ববর্তী</button>
       <div class="diary-dots" id="diary-dots"></div>
-      <button class="btn btn-ghost" id="poetic-next" aria-label="পরের শব্দ">▶</button>
+      <button class="btn btn-ghost" id="poetic-next" aria-label="পরের শব্দ">পরবর্তী</button>
     </div>
   </section>
 
@@ -959,28 +937,27 @@ img, svg { display: block; max-width: 100%; }
     <div id="library-content"></div>
   </section>
 
-  <!-- ================= VISUAL VOCABULARY ================= -->
-  <section id="view-visual" class="view">
-    <div class="topbar"><h1>দৃশ্যভিত্তিক মোড</h1><span></span></div>
-    <div class="scene-tabs" id="scene-tabs"></div>
-    <div class="scene-stage" id="scene-stage"></div>
-    <p class="content-pad" style="font-size:0.8rem;color:var(--muted);text-align:center">ছবির উপর ট্যাপ করে শব্দ শেখো</p>
+  <!-- ================= URDU ALPHABET MODE ================= -->
+  <section id="view-alphabet" class="view">
+    <div class="topbar"><h1>উর্দু অক্ষর মোড</h1><span></span></div>
+    <p class="content-pad" style="font-size:0.8rem;color:var(--muted);text-align:center">প্রতিটি অক্ষরের নাম, উচ্চারণ ইঙ্গিত পড়ো এবং শুনতে বোতামে ট্যাপ করো</p>
+    <div class="alphabet-grid" id="alphabet-grid"></div>
   </section>
 
   <nav class="nav-spine" id="nav-spine">
-    <button class="nav-item is-active" data-view="home"><span class="nav-glyph">🏠</span>হোম</button>
-    <button class="nav-item" data-view="spelling"><span class="nav-glyph">✍️</span>বানান</button>
-    <button class="nav-item" data-view="study"><span class="nav-glyph">📖</span>শব্দার্থ</button>
-    <button class="nav-item" data-view="poetic"><span class="nav-glyph">🖋️</span>কাব্যিক</button>
-    <button class="nav-item" data-view="library"><span class="nav-glyph">📚</span>লাইব্রেরি</button>
-    <button class="nav-item" data-view="visual"><span class="nav-glyph">🖼️</span>দৃশ্য</button>
+    <button class="nav-item is-active" data-view="home">হোম</button>
+    <button class="nav-item" data-view="spelling">বানান</button>
+    <button class="nav-item" data-view="study">শব্দার্থ</button>
+    <button class="nav-item" data-view="poetic">কাব্যিক</button>
+    <button class="nav-item" data-view="alphabet">অক্ষর</button>
+    <button class="nav-item" data-view="library">লাইব্রেরি</button>
   </nav>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-const WORDS_DATA = {"meta":{"app":"esho-urdu-shikhi","version":"1.0.0","description":"Core vocabulary bank. Extend this file with more entries — every mode reads from the same schema.","schema_notes":{"id":"unique string id, keep stable once shipped (localStorage references these)","urdu":"correct Urdu spelling — this is the ground truth the spelling game checks against","transliteration":"informal Latin transliteration","bengali_pron":"Bengali phonetic approximation, for readers who cannot yet sound out Urdu","bengali_meaning":"the actual meaning in Bengali","antonym":"{urdu, bengali_meaning} or null","is_poetic":"boolean — marks entries eligible for Poetic Mode and Word-of-the-Day rotation","poetic_note":"short philosophical/literary gloss in Bengali, or null","difficulty":"1 (easy) to 3 (hard) — controls letter-count / tile complexity grouping","type":"word | proverb","tags":"free-form array for filtering","scene":"optional scene id for Visual Vocabulary mode","scene_position":"optional {x,y} as percentages, for hotspot placement"}},"words":[{"id":"w001","type":"word","urdu":"کتاب","transliteration":"kitaab","bengali_pron":"কিতাব","bengali_meaning":"বই","antonym":null,"is_poetic":false,"poetic_note":null,"difficulty":1,"tags":["everyday","noun"],"scene":"room","scene_position":{"x":22,"y":46}},{"id":"w002","type":"word","urdu":"قلم","transliteration":"qalam","bengali_pron":"কলম","bengali_meaning":"কলম","antonym":null,"is_poetic":false,"poetic_note":null,"difficulty":1,"tags":["everyday","noun"],"scene":"room","scene_position":{"x":30,"y":42}},{"id":"w003","type":"word","urdu":"پانی","transliteration":"paani","bengali_pron":"পানি","bengali_meaning":"পানি","antonym":null,"is_poetic":false,"poetic_note":null,"difficulty":1,"tags":["everyday","noun"],"scene":"room","scene_position":{"x":68,"y":50}},{"id":"w004","type":"word","urdu":"دروازہ","transliteration":"darwaza","bengali_pron":"দরওয়াজা","bengali_meaning":"দরজা","antonym":null,"is_poetic":false,"poetic_note":null,"difficulty":2,"tags":["everyday","noun"],"scene":"room","scene_position":{"x":85,"y":40}},{"id":"w005","type":"word","urdu":"کھڑکی","transliteration":"khirki","bengali_pron":"খিড়কি","bengali_meaning":"জানালা","antonym":null,"is_poetic":false,"poetic_note":null,"difficulty":2,"tags":["everyday","noun"],"scene":"room","scene_position":{"x":12,"y":22}},{"id":"w006","type":"word","urdu":"کرسی","transliteration":"kursi","bengali_pron":"কুরসি","bengali_meaning":"চেয়ার","antonym":null,"is_poetic":false,"poetic_note":null,"difficulty":1,"tags":["everyday","noun"],"scene":"room","scene_position":{"x":50,"y":68}},{"id":"w007","type":"word","urdu":"میز","transliteration":"mez","bengali_pron":"মেজ","bengali_meaning":"টেবিল","antonym":null,"is_poetic":false,"poetic_note":null,"difficulty":1,"tags":["everyday","noun"],"scene":"room","scene_position":{"x":45,"y":55}},{"id":"w008","type":"word","urdu":"چاند","transliteration":"chand","bengali_pron":"চাঁদ","bengali_meaning":"চাঁদ","antonym":null,"is_poetic":true,"poetic_note":"উর্দু কবিতায় 'চাঁদ' প্রিয়জনের মুখের সৌন্দর্যের সাথে তুলনা করা হয় — এটি নিছক আকাশের বস্তু নয়, বরং সৌন্দর্য ও দূরত্ব — দুটোই বোঝায়, কারণ চাঁদ সুন্দর কিন্তু নাগালের বাইরে।","difficulty":1,"tags":["nature","poetic"],"scene":"night_sky","scene_position":{"x":75,"y":20}},{"id":"w009","type":"word","urdu":"ستارہ","transliteration":"sitara","bengali_pron":"সিতারা","bengali_meaning":"তারা (নক্ষত্র)","antonym":null,"is_poetic":true,"poetic_note":"'ستارہ' শুধু আকাশের তারা নয় — উর্দুতে কারো ভাগ্য বা সৌভাগ্যকেও বোঝাতে ব্যবহৃত হয়, যেমন 'তার ভাগ্যের তারা উজ্জ্বল' বোঝাতে।","difficulty":2,"tags":["nature","poetic"],"scene":"night_sky","scene_position":{"x":30,"y":15}},{"id":"w010","type":"word","urdu":"آسمان","transliteration":"aasman","bengali_pron":"আসমান","bengali_meaning":"আকাশ","antonym":{"urdu":"زمین","bengali_meaning":"মাটি / পৃথিবী"},"is_poetic":true,"poetic_note":"'زمین سے آسمان تک' (মাটি থেকে আকাশ পর্যন্ত) — উর্দু কবিতায় দূরত্ব বা পার্থক্য প্রকাশের একটি প্রিয় প্রতীক।","difficulty":2,"tags":["nature","poetic"],"scene":"night_sky","scene_position":{"x":50,"y":10}},{"id":"w011","type":"word","urdu":"زمین","transliteration":"zameen","bengali_pron":"জমিন","bengali_meaning":"মাটি, পৃথিবী","antonym":{"urdu":"آسمان","bengali_meaning":"আকাশ"},"is_poetic":false,"poetic_note":null,"difficulty":1,"tags":["nature"],"scene":null,"scene_position":null},{"id":"w012","type":"word","urdu":"رات","transliteration":"raat","bengali_pron":"রাত","bengali_meaning":"রাত","antonym":{"urdu":"دن","bengali_meaning":"দিন"},"is_poetic":false,"poetic_note":null,"difficulty":1,"tags":["everyday","time"],"scene":"night_sky","scene_position":{"x":10,"y":60}},{"id":"w013","type":"word","urdu":"دن","transliteration":"din","bengali_pron":"দিন","bengali_meaning":"দিন","antonym":{"urdu":"رات","bengali_meaning":"রাত"},"is_poetic":false,"poetic_note":null,"difficulty":1,"tags":["everyday","time"],"scene":null,"scene_position":null},{"id":"w014","type":"word","urdu":"خوشی","transliteration":"khushi","bengali_pron":"খুশি","bengali_meaning":"আনন্দ, খুশি","antonym":{"urdu":"غم","bengali_meaning":"দুঃখ, বেদনা"},"is_poetic":false,"poetic_note":null,"difficulty":2,"tags":["emotion"],"scene":null,"scene_position":null},{"id":"w015","type":"word","urdu":"غم","transliteration":"gham","bengali_pron":"গম","bengali_meaning":"দুঃখ, বেদনা","antonym":{"urdu":"خوشی","bengali_meaning":"আনন্দ, খুশি"},"is_poetic":true,"poetic_note":"উর্দু গজলে 'غم' শুধু সাধারণ দুঃখ নয় — এটি প্রায়ই এক ধরনের গভীর, প্রায় মর্যাদাপূর্ণ বেদনাকে বোঝায়, যা প্রেম বা জীবনের গভীরতা থেকে জন্ম নেয়।","difficulty":2,"tags":["emotion","poetic"],"scene":null,"scene_position":null},{"id":"w016","type":"word","urdu":"سچ","transliteration":"sach","bengali_pron":"সচ","bengali_meaning":"সত্য","antonym":{"urdu":"جھوٹ","bengali_meaning":"মিথ্যা"},"is_poetic":false,"poetic_note":null,"difficulty":1,"tags":["everyday","value"],"scene":null,"scene_position":null},{"id":"w017","type":"word","urdu":"جھوٹ","transliteration":"jhoot","bengali_pron":"ঝুট","bengali_meaning":"মিথ্যা","antonym":{"urdu":"سچ","bengali_meaning":"সত্য"},"is_poetic":false,"poetic_note":null,"difficulty":2,"tags":["everyday","value"],"scene":null,"scene_position":null},{"id":"w018","type":"word","urdu":"محبت","transliteration":"mohabbat","bengali_pron":"মোহাব্বত","bengali_meaning":"ভালোবাসা","antonym":null,"is_poetic":true,"poetic_note":"'محبت' একটি নরম, স্থির ভালোবাসা বোঝায় — যত্ন ও গভীর অনুরাগ থেকে জন্ম নেওয়া, 'عشق'-এর তীব্র আবেগের চেয়ে শান্ত।","difficulty":2,"tags":["emotion","poetic"],"scene":null,"scene_position":null},{"id":"w019","type":"word","urdu":"عشق","transliteration":"ishq","bengali_pron":"ইশক","bengali_meaning":"প্রগাঢ় প্রেম, তীব্র ভালোবাসা","antonym":null,"is_poetic":true,"poetic_note":"উর্দু-ফারসি কাব্যে 'عشق' শুধু রোমান্টিক প্রেম নয় — এটি এমন এক তীব্র আকর্ষণ যা কখনো কখনো আধ্যাত্মিক বা ঐশ্বরিক প্রেমকেও নির্দেশ করে।","difficulty":2,"tags":["emotion","poetic"],"scene":null,"scene_position":null},{"id":"w020","type":"word","urdu":"درد","transliteration":"dard","bengali_pron":"দর্দ","bengali_meaning":"ব্যথা, বেদনা","antonym":null,"is_poetic":true,"poetic_note":"গজলে 'درد' প্রায়ই শারীরিক ব্যথা নয়, বরং বিরহ বা আকাঙ্ক্ষার এক গভীর, প্রায় মূল্যবান অনুভূতি হিসেবে চিত্রিত হয়।","difficulty":2,"tags":["emotion","poetic"],"scene":null,"scene_position":null},{"id":"w021","type":"word","urdu":"امید","transliteration":"umeed","bengali_pron":"উমিদ","bengali_meaning":"আশা","antonym":null,"is_poetic":true,"poetic_note":"'امید' — অন্ধকারতম রাতের পরও ভোর আসার বিশ্বাস। উর্দু কবিতায় এটি প্রায়ই একটি টিমটিমে প্রদীপের সাথে তুলনা করা হয়।","difficulty":2,"tags":["emotion","poetic"],"scene":null,"scene_position":null},{"id":"w022","type":"word","urdu":"تنہائی","transliteration":"tanhai","bengali_pron":"তানহাই","bengali_meaning":"একাকীত্ব, নিঃসঙ্গতা","antonym":null,"is_poetic":true,"poetic_note":"'تنہائی' নিছক একা থাকা নয় — এটি এমন এক নীরবতা যেখানে নিজের চিন্তা আর স্মৃতিই একমাত্র সঙ্গী হয়ে ওঠে।","difficulty":3,"tags":["emotion","poetic"],"scene":null,"scene_position":null},{"id":"w023","type":"word","urdu":"یاد","transliteration":"yaad","bengali_pron":"ইয়াদ","bengali_meaning":"স্মৃতি","antonym":null,"is_poetic":true,"poetic_note":"উর্দু গজলে 'یاد' প্রায়ই এমন কিছু হিসেবে আসে যা ডেকে আনা হয় না, বরং নিজে থেকেই ফিরে আসে — বিশেষ করে নীরব মুহূর্তে।","difficulty":1,"tags":["emotion","poetic"],"scene":null,"scene_position":null},{"id":"w024","type":"word","urdu":"حسرت","transliteration":"hasrat","bengali_pron":"হাসরাত","bengali_meaning":"আক্ষেপ, অপূর্ণ আকাঙ্ক্ষা","antonym":null,"is_poetic":true,"poetic_note":"'حسرت' এমন এক ইচ্ছা যা পূরণ হয়নি — না ঠিক দুঃখ, না ঠিক আফসোস, বরং দুটোর মাঝামাঝি এক নরম আক্ষেপ।","difficulty":3,"tags":["emotion","poetic"],"scene":null,"scene_position":null},{"id":"w025","type":"word","urdu":"خواب","transliteration":"khwab","bengali_pron":"খোয়াব","bengali_meaning":"স্বপ্ন","antonym":null,"is_poetic":true,"poetic_note":"'خواب' ঘুমের স্বপ্ন এবং জীবনের লক্ষ্য — দুটোই বোঝাতে পারে। উর্দু কবিতায় দুই অর্থই প্রায়ই একসাথে বোনা থাকে।","difficulty":2,"tags":["emotion","poetic"],"scene":null,"scene_position":null},{"id":"w026","type":"word","urdu":"دل","transliteration":"dil","bengali_pron":"দিল","bengali_meaning":"হৃদয়, মন","antonym":null,"is_poetic":true,"poetic_note":"উর্দু গজলের সবচেয়ে ঘন ঘন ব্যবহৃত শব্দগুলোর একটি — 'دل' শুধু অঙ্গ নয়, বরং প্রেম, ব্যথা ও আবেগের কেন্দ্রবিন্দু হিসেবে কল্পিত হয়।","difficulty":1,"tags":["emotion","poetic"],"scene":null,"scene_position":null},{"id":"w027","type":"word","urdu":"وقت","transliteration":"waqt","bengali_pron":"ওয়াক্ত","bengali_meaning":"সময়","antonym":null,"is_poetic":true,"poetic_note":"'وقت' থেমে থাকে না — উর্দু কবিতায় এটি প্রায়ই এক নদীর মতো বহমান কিছু হিসেবে চিত্রিত হয়, যা ফিরিয়ে আনা যায় না।","difficulty":2,"tags":["time","poetic"],"scene":null,"scene_position":null},{"id":"p001","type":"proverb","urdu":"دیر آید درست آید","transliteration":"der aayad, durust aayad","bengali_pron":"দের আয়দ, দুরুস্ত আয়দ","bengali_meaning":"দেরিতে হলেও ঠিকভাবে হওয়াই ভালো — 'দেরিতে আসা কখনো না আসার চেয়ে ভালো'-এর কাছাকাছি।","antonym":null,"is_poetic":true,"poetic_note":"একটি প্রচলিত উর্দু-ফারসি প্রবাদ, তাড়াহুড়ার চেয়ে সঠিক সময়ে সঠিক কাজের গুরুত্ব বোঝাতে ব্যবহৃত হয়।","difficulty":3,"tags":["proverb"],"scene":null,"scene_position":null},{"id":"p002","type":"proverb","urdu":"جو گرجتے ہیں وہ برستے نہیں","transliteration":"jo garajte hain wo baraste nahi","bengali_pron":"জো গরজতে হ্যায় ও বরসতে নেহি","bengali_meaning":"যারা গর্জন করে তারা বর্ষণ করে না — বাংলা 'যে কুকুর ঘেউ ঘেউ করে সে কামড়ায় না'-এর সমতুল্য।","antonym":null,"is_poetic":true,"poetic_note":"হুমকি বা বড় কথার আড়ালে প্রায়ই কোনো বাস্তব শক্তি থাকে না — এই প্রবাদ সেই সত্যকে মনে করিয়ে দেয়।","difficulty":3,"tags":["proverb"],"scene":null,"scene_position":null},{"id":"p003","type":"proverb","urdu":"بوند بوند سے دریا بنتا ہے","transliteration":"boond boond se darya banta hai","bengali_pron":"বুন্দ বুন্দ সে দরিয়া বনতা হ্যায়","bengali_meaning":"ফোঁটা ফোঁটা জল জমেই নদী হয় — ছোট ছোট প্রচেষ্টা জমেই বড় ফল আসে।","antonym":null,"is_poetic":true,"poetic_note":"ধৈর্য ও ধারাবাহিকতার মূল্য বোঝাতে ব্যবহৃত এক প্রিয় উর্দু প্রবাদ — ছোট পদক্ষেপকে খাটো করে দেখতে নিষেধ করে।","difficulty":3,"tags":["proverb"],"scene":null,"scene_position":null}],"word_of_day_sequence":["w015","p003","w020","w009","w026","p002","w021","w008","w019","w024","p001","w022","w010","w018","w025","w023","w027"],"scenes":{"room":{"label_bn":"ঘরের দৃশ্য","background":"#EDE3CC"},"night_sky":{"label_bn":"রাতের আকাশ","background":"#1B2A4A"}}};
+const WORDS_DATA = {"meta":{"app":"esho-urdu-shikhi","version":"1.0.0","description":"Core vocabulary bank. Extend this file with more entries — every mode reads from the same schema.","schema_notes":{"id":"unique string id, keep stable once shipped (localStorage references these)","urdu":"correct Urdu spelling — this is the ground truth the spelling game checks against","transliteration":"informal Latin transliteration","bengali_pron":"Bengali phonetic approximation, for readers who cannot yet sound out Urdu","bengali_meaning":"the actual meaning in Bengali","antonym":"{urdu, bengali_meaning} or null","is_poetic":"boolean — marks entries eligible for Poetic Mode and Word-of-the-Day rotation","poetic_note":"short philosophical/literary gloss in Bengali, or null","difficulty":"1 (easy) to 3 (hard) — controls letter-count / tile complexity grouping","type":"word | proverb","tags":"free-form array for filtering","scene":"optional scene id for Visual Vocabulary mode","scene_position":"optional {x,y} as percentages, for hotspot placement"}},"words":[{"id":"w001","type":"word","urdu":"کتاب","transliteration":"kitaab","bengali_pron":"কিতাব","bengali_meaning":"বই","antonym":null,"is_poetic":false,"poetic_note":null,"difficulty":1,"tags":["everyday","noun"]},{"id":"w002","type":"word","urdu":"قلم","transliteration":"qalam","bengali_pron":"কলম","bengali_meaning":"কলম","antonym":null,"is_poetic":false,"poetic_note":null,"difficulty":1,"tags":["everyday","noun"]},{"id":"w003","type":"word","urdu":"پانی","transliteration":"paani","bengali_pron":"পানি","bengali_meaning":"পানি","antonym":null,"is_poetic":false,"poetic_note":null,"difficulty":1,"tags":["everyday","noun"]},{"id":"w004","type":"word","urdu":"دروازہ","transliteration":"darwaza","bengali_pron":"দরওয়াজা","bengali_meaning":"দরজা","antonym":null,"is_poetic":false,"poetic_note":null,"difficulty":2,"tags":["everyday","noun"]},{"id":"w005","type":"word","urdu":"کھڑکی","transliteration":"khirki","bengali_pron":"খিড়কি","bengali_meaning":"জানালা","antonym":null,"is_poetic":false,"poetic_note":null,"difficulty":2,"tags":["everyday","noun"]},{"id":"w006","type":"word","urdu":"کرسی","transliteration":"kursi","bengali_pron":"কুরসি","bengali_meaning":"চেয়ার","antonym":null,"is_poetic":false,"poetic_note":null,"difficulty":1,"tags":["everyday","noun"]},{"id":"w007","type":"word","urdu":"میز","transliteration":"mez","bengali_pron":"মেজ","bengali_meaning":"টেবিল","antonym":null,"is_poetic":false,"poetic_note":null,"difficulty":1,"tags":["everyday","noun"]},{"id":"w008","type":"word","urdu":"چاند","transliteration":"chand","bengali_pron":"চাঁদ","bengali_meaning":"চাঁদ","antonym":null,"is_poetic":true,"poetic_note":"উর্দু কবিতায় 'চাঁদ' প্রিয়জনের মুখের সৌন্দর্যের সাথে তুলনা করা হয় — এটি নিছক আকাশের বস্তু নয়, বরং সৌন্দর্য ও দূরত্ব — দুটোই বোঝায়, কারণ চাঁদ সুন্দর কিন্তু নাগালের বাইরে।","difficulty":1,"tags":["nature","poetic"]},{"id":"w009","type":"word","urdu":"ستارہ","transliteration":"sitara","bengali_pron":"সিতারা","bengali_meaning":"তারা (নক্ষত্র)","antonym":null,"is_poetic":true,"poetic_note":"'ستارہ' শুধু আকাশের তারা নয় — উর্দুতে কারো ভাগ্য বা সৌভাগ্যকেও বোঝাতে ব্যবহৃত হয়, যেমন 'তার ভাগ্যের তারা উজ্জ্বল' বোঝাতে।","difficulty":2,"tags":["nature","poetic"]},{"id":"w010","type":"word","urdu":"آسمان","transliteration":"aasman","bengali_pron":"আসমান","bengali_meaning":"আকাশ","antonym":{"urdu":"زمین","bengali_meaning":"মাটি / পৃথিবী"},"is_poetic":true,"poetic_note":"'زمین سے آسمان تک' (মাটি থেকে আকাশ পর্যন্ত) — উর্দু কবিতায় দূরত্ব বা পার্থক্য প্রকাশের একটি প্রিয় প্রতীক।","difficulty":2,"tags":["nature","poetic"]},{"id":"w011","type":"word","urdu":"زمین","transliteration":"zameen","bengali_pron":"জমিন","bengali_meaning":"মাটি, পৃথিবী","antonym":{"urdu":"آسمان","bengali_meaning":"আকাশ"},"is_poetic":false,"poetic_note":null,"difficulty":1,"tags":["nature"]},{"id":"w012","type":"word","urdu":"رات","transliteration":"raat","bengali_pron":"রাত","bengali_meaning":"রাত","antonym":{"urdu":"دن","bengali_meaning":"দিন"},"is_poetic":false,"poetic_note":null,"difficulty":1,"tags":["everyday","time"]},{"id":"w013","type":"word","urdu":"دن","transliteration":"din","bengali_pron":"দিন","bengali_meaning":"দিন","antonym":{"urdu":"رات","bengali_meaning":"রাত"},"is_poetic":false,"poetic_note":null,"difficulty":1,"tags":["everyday","time"]},{"id":"w014","type":"word","urdu":"خوشی","transliteration":"khushi","bengali_pron":"খুশি","bengali_meaning":"আনন্দ, খুশি","antonym":{"urdu":"غم","bengali_meaning":"দুঃখ, বেদনা"},"is_poetic":false,"poetic_note":null,"difficulty":2,"tags":["emotion"]},{"id":"w015","type":"word","urdu":"غم","transliteration":"gham","bengali_pron":"গম","bengali_meaning":"দুঃখ, বেদনা","antonym":{"urdu":"خوشی","bengali_meaning":"আনন্দ, খুশি"},"is_poetic":true,"poetic_note":"উর্দু গজলে 'غم' শুধু সাধারণ দুঃখ নয় — এটি প্রায়ই এক ধরনের গভীর, প্রায় মর্যাদাপূর্ণ বেদনাকে বোঝায়, যা প্রেম বা জীবনের গভীরতা থেকে জন্ম নেয়।","difficulty":2,"tags":["emotion","poetic"]},{"id":"w016","type":"word","urdu":"سچ","transliteration":"sach","bengali_pron":"সচ","bengali_meaning":"সত্য","antonym":{"urdu":"جھوٹ","bengali_meaning":"মিথ্যা"},"is_poetic":false,"poetic_note":null,"difficulty":1,"tags":["everyday","value"]},{"id":"w017","type":"word","urdu":"جھوٹ","transliteration":"jhoot","bengali_pron":"ঝুট","bengali_meaning":"মিথ্যা","antonym":{"urdu":"سچ","bengali_meaning":"সত্য"},"is_poetic":false,"poetic_note":null,"difficulty":2,"tags":["everyday","value"]},{"id":"w018","type":"word","urdu":"محبت","transliteration":"mohabbat","bengali_pron":"মোহাব্বত","bengali_meaning":"ভালোবাসা","antonym":null,"is_poetic":true,"poetic_note":"'محبت' একটি নরম, স্থির ভালোবাসা বোঝায় — যত্ন ও গভীর অনুরাগ থেকে জন্ম নেওয়া, 'عشق'-এর তীব্র আবেগের চেয়ে শান্ত।","difficulty":2,"tags":["emotion","poetic"]},{"id":"w019","type":"word","urdu":"عشق","transliteration":"ishq","bengali_pron":"ইশক","bengali_meaning":"প্রগাঢ় প্রেম, তীব্র ভালোবাসা","antonym":null,"is_poetic":true,"poetic_note":"উর্দু-ফারসি কাব্যে 'عشق' শুধু রোমান্টিক প্রেম নয় — এটি এমন এক তীব্র আকর্ষণ যা কখনো কখনো আধ্যাত্মিক বা ঐশ্বরিক প্রেমকেও নির্দেশ করে।","difficulty":2,"tags":["emotion","poetic"]},{"id":"w020","type":"word","urdu":"درد","transliteration":"dard","bengali_pron":"দর্দ","bengali_meaning":"ব্যথা, বেদনা","antonym":null,"is_poetic":true,"poetic_note":"গজলে 'درد' প্রায়ই শারীরিক ব্যথা নয়, বরং বিরহ বা আকাঙ্ক্ষার এক গভীর, প্রায় মূল্যবান অনুভূতি হিসেবে চিত্রিত হয়।","difficulty":2,"tags":["emotion","poetic"]},{"id":"w021","type":"word","urdu":"امید","transliteration":"umeed","bengali_pron":"উমিদ","bengali_meaning":"আশা","antonym":null,"is_poetic":true,"poetic_note":"'امید' — অন্ধকারতম রাতের পরও ভোর আসার বিশ্বাস। উর্দু কবিতায় এটি প্রায়ই একটি টিমটিমে প্রদীপের সাথে তুলনা করা হয়।","difficulty":2,"tags":["emotion","poetic"]},{"id":"w022","type":"word","urdu":"تنہائی","transliteration":"tanhai","bengali_pron":"তানহাই","bengali_meaning":"একাকীত্ব, নিঃসঙ্গতা","antonym":null,"is_poetic":true,"poetic_note":"'تنہائی' নিছক একা থাকা নয় — এটি এমন এক নীরবতা যেখানে নিজের চিন্তা আর স্মৃতিই একমাত্র সঙ্গী হয়ে ওঠে।","difficulty":3,"tags":["emotion","poetic"]},{"id":"w023","type":"word","urdu":"یاد","transliteration":"yaad","bengali_pron":"ইয়াদ","bengali_meaning":"স্মৃতি","antonym":null,"is_poetic":true,"poetic_note":"উর্দু গজলে 'یاد' প্রায়ই এমন কিছু হিসেবে আসে যা ডেকে আনা হয় না, বরং নিজে থেকেই ফিরে আসে — বিশেষ করে নীরব মুহূর্তে।","difficulty":1,"tags":["emotion","poetic"]},{"id":"w024","type":"word","urdu":"حسرت","transliteration":"hasrat","bengali_pron":"হাসরাত","bengali_meaning":"আক্ষেপ, অপূর্ণ আকাঙ্ক্ষা","antonym":null,"is_poetic":true,"poetic_note":"'حسرت' এমন এক ইচ্ছা যা পূরণ হয়নি — না ঠিক দুঃখ, না ঠিক আফসোস, বরং দুটোর মাঝামাঝি এক নরম আক্ষেপ।","difficulty":3,"tags":["emotion","poetic"]},{"id":"w025","type":"word","urdu":"خواب","transliteration":"khwab","bengali_pron":"খোয়াব","bengali_meaning":"স্বপ্ন","antonym":null,"is_poetic":true,"poetic_note":"'خواب' ঘুমের স্বপ্ন এবং জীবনের লক্ষ্য — দুটোই বোঝাতে পারে। উর্দু কবিতায় দুই অর্থই প্রায়ই একসাথে বোনা থাকে।","difficulty":2,"tags":["emotion","poetic"]},{"id":"w026","type":"word","urdu":"دل","transliteration":"dil","bengali_pron":"দিল","bengali_meaning":"হৃদয়, মন","antonym":null,"is_poetic":true,"poetic_note":"উর্দু গজলের সবচেয়ে ঘন ঘন ব্যবহৃত শব্দগুলোর একটি — 'دل' শুধু অঙ্গ নয়, বরং প্রেম, ব্যথা ও আবেগের কেন্দ্রবিন্দু হিসেবে কল্পিত হয়।","difficulty":1,"tags":["emotion","poetic"]},{"id":"w027","type":"word","urdu":"وقت","transliteration":"waqt","bengali_pron":"ওয়াক্ত","bengali_meaning":"সময়","antonym":null,"is_poetic":true,"poetic_note":"'وقت' থেমে থাকে না — উর্দু কবিতায় এটি প্রায়ই এক নদীর মতো বহমান কিছু হিসেবে চিত্রিত হয়, যা ফিরিয়ে আনা যায় না।","difficulty":2,"tags":["time","poetic"]},{"id":"p001","type":"proverb","urdu":"دیر آید درست آید","transliteration":"der aayad, durust aayad","bengali_pron":"দের আয়দ, দুরুস্ত আয়দ","bengali_meaning":"দেরিতে হলেও ঠিকভাবে হওয়াই ভালো — 'দেরিতে আসা কখনো না আসার চেয়ে ভালো'-এর কাছাকাছি।","antonym":null,"is_poetic":true,"poetic_note":"একটি প্রচলিত উর্দু-ফারসি প্রবাদ, তাড়াহুড়ার চেয়ে সঠিক সময়ে সঠিক কাজের গুরুত্ব বোঝাতে ব্যবহৃত হয়।","difficulty":3,"tags":["proverb"]},{"id":"p002","type":"proverb","urdu":"جو گرجتے ہیں وہ برستے نہیں","transliteration":"jo garajte hain wo baraste nahi","bengali_pron":"জো গরজতে হ্যায় ও বরসতে নেহি","bengali_meaning":"যারা গর্জন করে তারা বর্ষণ করে না — বাংলা 'যে কুকুর ঘেউ ঘেউ করে সে কামড়ায় না'-এর সমতুল্য।","antonym":null,"is_poetic":true,"poetic_note":"হুমকি বা বড় কথার আড়ালে প্রায়ই কোনো বাস্তব শক্তি থাকে না — এই প্রবাদ সেই সত্যকে মনে করিয়ে দেয়।","difficulty":3,"tags":["proverb"]},{"id":"p003","type":"proverb","urdu":"بوند بوند سے دریا بنتا ہے","transliteration":"boond boond se darya banta hai","bengali_pron":"বুন্দ বুন্দ সে দরিয়া বনতা হ্যায়","bengali_meaning":"ফোঁটা ফোঁটা জল জমেই নদী হয় — ছোট ছোট প্রচেষ্টা জমেই বড় ফল আসে।","antonym":null,"is_poetic":true,"poetic_note":"ধৈর্য ও ধারাবাহিকতার মূল্য বোঝাতে ব্যবহৃত এক প্রিয় উর্দু প্রবাদ — ছোট পদক্ষেপকে খাটো করে দেখতে নিষেধ করে।","difficulty":3,"tags":["proverb"]},{"id":"w028","type":"word","urdu":"زندگی","transliteration":"zindagi","bengali_pron":"জিন্দেগি","bengali_meaning":"জীবন","antonym":{"urdu":"موت","bengali_meaning":"মৃত্যু"},"is_poetic":true,"poetic_note":"উর্দু কবিতায় 'زندگی' প্রায়ই এক ভ্রমণ হিসেবে চিত্রিত হয় — যার প্রতিটি বাঁকে আনন্দ ও বেদনা দুটোই থাকে।","difficulty":2,"tags":["emotion","poetic"]},{"id":"w029","type":"word","urdu":"موت","transliteration":"maut","bengali_pron":"মউত","bengali_meaning":"মৃত্যু","antonym":{"urdu":"زندگی","bengali_meaning":"জীবন"},"is_poetic":true,"poetic_note":"গজলে 'موت' কে ভয়ের চেয়ে প্রায়ই একটি অনিবার্য সত্য বা এক ধরনের প্রশান্তি হিসেবে দেখা হয়।","difficulty":2,"tags":["poetic"]},{"id":"w030","type":"word","urdu":"خزاں","transliteration":"khizan","bengali_pron":"খিজান","bengali_meaning":"শরৎ, পত্রঝরা ঋতু (রূপকভাবে: পতন, বিষণ্নতা)","antonym":{"urdu":"بہار","bengali_meaning":"বসন্ত"},"is_poetic":true,"poetic_note":"উর্দু কবিতায় 'خزاں' মানে শুধু ঋতু নয় — এটি প্রেমের পতন বা সৌন্দর্যের বিলুপ্তিরও প্রতীক।","difficulty":3,"tags":["nature","poetic"]},{"id":"w031","type":"word","urdu":"بہار","transliteration":"bahar","bengali_pron":"বাহার","bengali_meaning":"বসন্ত","antonym":{"urdu":"خزاں","bengali_meaning":"শরৎ, পতন"},"is_poetic":true,"poetic_note":"'بہار' নতুন জীবন, প্রেম ও আশার প্রতীক — 'خزاں'-এর ঠিক বিপরীত আবহ বহন করে।","difficulty":2,"tags":["nature","poetic"]},{"id":"w032","type":"word","urdu":"سکون","transliteration":"sukoon","bengali_pron":"সুকুন","bengali_meaning":"প্রশান্তি, শান্তি","antonym":null,"is_poetic":true,"poetic_note":"'سکون' বাহ্যিক নীরবতা নয়, বরং মনের গভীরে এক ধরনের স্থিরতা বোঝায়।","difficulty":2,"tags":["emotion","poetic"]},{"id":"w033","type":"word","urdu":"بے چینی","transliteration":"bechaini","bengali_pron":"বেচ্যায়নি","bengali_meaning":"অস্থিরতা, অশান্তি","antonym":{"urdu":"سکون","bengali_meaning":"প্রশান্তি"},"is_poetic":true,"poetic_note":"মনের সেই অবস্থা যেখানে কিছুতেই স্থির থাকা যায় না — প্রায়ই বিরহ বা অপূর্ণ আকাঙ্ক্ষা থেকে জন্ম নেয়।","difficulty":3,"tags":["emotion","poetic"]},{"id":"w034","type":"word","urdu":"وفا","transliteration":"wafa","bengali_pron":"ওয়াফা","bengali_meaning":"বিশ্বস্ততা (বিশেষত প্রেমে)","antonym":{"urdu":"جفا","bengali_meaning":"নিষ্ঠুরতা, অবিচার"},"is_poetic":true,"poetic_note":"'وفا' ও 'جفا' উর্দু গজলের সবচেয়ে প্রিয় দ্বৈত থিম — প্রেমিকের আনুগত্য বনাম প্রেয়সীর নিষ্ঠুরতা।","difficulty":2,"tags":["emotion","poetic"]},{"id":"w035","type":"word","urdu":"جفا","transliteration":"jafa","bengali_pron":"জাফা","bengali_meaning":"নিষ্ঠুরতা, প্রেমে অবিচার","antonym":{"urdu":"وفا","bengali_meaning":"বিশ্বস্ততা"},"is_poetic":true,"poetic_note":"ঐতিহ্যবাহী গজলে প্রেয়সীর 'جفا' প্রেমিকের 'وفا'-কে আরও উজ্জ্বল করে তোলে — এ যেন এক পরীক্ষা।","difficulty":3,"tags":["emotion","poetic"]},{"id":"w036","type":"word","urdu":"آرزو","transliteration":"aarzu","bengali_pron":"আরযু","bengali_meaning":"আকাঙ্ক্ষা, বাসনা","antonym":null,"is_poetic":true,"poetic_note":"'آرزو' এমন এক ইচ্ছা যা এখনো পূর্ণ হয়নি, কিন্তু হৃদয়ে জীবন্ত হয়ে আছে।","difficulty":2,"tags":["emotion","poetic"]},{"id":"w037","type":"word","urdu":"جستجو","transliteration":"justaju","bengali_pron":"জুস্তুজু","bengali_meaning":"অনুসন্ধান, খোঁজ","antonym":null,"is_poetic":true,"poetic_note":"'جستجو' শুধু কিছু খোঁজা নয় — উর্দু কবিতায় এটি প্রায়ই নিজেকে বা সত্যকে খোঁজার যাত্রা বোঝায়।","difficulty":3,"tags":["poetic"]},{"id":"w038","type":"word","urdu":"سرور","transliteration":"suroor","bengali_pron":"সুরূর","bengali_meaning":"মাদকতাপূর্ণ আনন্দ, আচ্ছন্নতা","antonym":null,"is_poetic":true,"poetic_note":"সাধারণ আনন্দের চেয়ে গভীর — এমন এক ভালোলাগা যা প্রায় নেশার মতো মনকে আচ্ছন্ন করে।","difficulty":3,"tags":["emotion","poetic"]},{"id":"w039","type":"word","urdu":"رنج","transliteration":"ranj","bengali_pron":"রঞ্জ","bengali_meaning":"দুঃখ, ক্ষোভ","antonym":null,"is_poetic":true,"poetic_note":"'رنج' এ দুঃখের সাথে সামান্য অভিমান বা ক্ষোভও মিশে থাকে — নিছক বেদনার চেয়ে জটিল এক অনুভূতি।","difficulty":2,"tags":["emotion","poetic"]},{"id":"w040","type":"word","urdu":"فراق","transliteration":"firaq","bengali_pron":"ফিরাক","bengali_meaning":"বিরহ, বিচ্ছেদ","antonym":{"urdu":"وصل","bengali_meaning":"মিলন"},"is_poetic":true,"poetic_note":"ঐতিহ্যবাহী গজলের কেন্দ্রীয় থিম — প্রিয়জন থেকে দূরত্বের যন্ত্রণা, যা কবিতাকে গভীরতা দেয়।","difficulty":3,"tags":["emotion","poetic"]},{"id":"w041","type":"word","urdu":"وصل","transliteration":"wasl","bengali_pron":"ওয়াসল","bengali_meaning":"মিলন (প্রিয়জনের সাথে পুনর্মিলন)","antonym":{"urdu":"فراق","bengali_meaning":"বিরহ"},"is_poetic":true,"poetic_note":"'فراق'-এর দীর্ঘ যন্ত্রণার পর কাঙ্ক্ষিত মুহূর্ত — উর্দু গজলে প্রায়ই স্বপ্নের মতো সুদূর কিছু হিসেবে আসে।","difficulty":3,"tags":["emotion","poetic"]},{"id":"w042","type":"word","urdu":"نصیب","transliteration":"naseeb","bengali_pron":"নসিব","bengali_meaning":"ভাগ্য","antonym":null,"is_poetic":true,"poetic_note":"'نصیب' এমন কিছু যা মানুষের নিয়ন্ত্রণের বাইরে — উর্দু কবিতায় প্রায়ই আক্ষেপ বা আত্মসমর্পণের সুরে আসে।","difficulty":2,"tags":["poetic"]}],"word_of_day_sequence":["w015","p003","w020","w009","w026","p002","w021","w008","w019","w024","p001","w022","w010","w018","w025","w023","w027","w034","w040","w030","w038","w042","w033","w036","w028","w035","w041","w031","w037","w029","w039","w032"],"alphabet":[{"id":"a01","urdu":"ا","name_bn":"আলিফ","sound_bn":"আ/অ ধ্বনির ভিত্তি"},{"id":"a02","urdu":"ب","name_bn":"বে","sound_bn":"ব"},{"id":"a03","urdu":"پ","name_bn":"পে","sound_bn":"প"},{"id":"a04","urdu":"ت","name_bn":"তে","sound_bn":"ত"},{"id":"a05","urdu":"ٹ","name_bn":"টে","sound_bn":"ট (মূর্ধন্য)"},{"id":"a06","urdu":"ث","name_bn":"সে","sound_bn":"স (বানানে আলাদা, উচ্চারণে সীন-এর মতো)"},{"id":"a07","urdu":"ج","name_bn":"জীম","sound_bn":"জ"},{"id":"a08","urdu":"چ","name_bn":"চে","sound_bn":"চ"},{"id":"a09","urdu":"ح","name_bn":"বড়ি হে","sound_bn":"হ (গলার গভীর থেকে)"},{"id":"a10","urdu":"خ","name_bn":"খে","sound_bn":"খ (গভীর ঘর্ষণ ধ্বনি)"},{"id":"a11","urdu":"د","name_bn":"দাল","sound_bn":"দ"},{"id":"a12","urdu":"ڈ","name_bn":"ডাল","sound_bn":"ড (মূর্ধন্য)"},{"id":"a13","urdu":"ذ","name_bn":"জাল","sound_bn":"জ (বানানে আলাদা, উচ্চারণে জে-এর মতো)"},{"id":"a14","urdu":"ر","name_bn":"রে","sound_bn":"র"},{"id":"a15","urdu":"ڑ","name_bn":"ড়ে","sound_bn":"ড় (মূর্ধন্য)"},{"id":"a16","urdu":"ز","name_bn":"জে","sound_bn":"জ"},{"id":"a17","urdu":"ژ","name_bn":"ঝে","sound_bn":"ঝ (মূলত ফার্সি শব্দে ব্যবহৃত)"},{"id":"a18","urdu":"س","name_bn":"সীন","sound_bn":"স"},{"id":"a19","urdu":"ش","name_bn":"শীন","sound_bn":"শ"},{"id":"a20","urdu":"ص","name_bn":"সোয়াদ","sound_bn":"স (বানানে আলাদা, উচ্চারণে সীন-এর মতো)"},{"id":"a21","urdu":"ض","name_bn":"জোয়াদ","sound_bn":"জ (বানানে আলাদা, উচ্চারণে জে-এর মতো)"},{"id":"a22","urdu":"ط","name_bn":"তোয়ে","sound_bn":"ত (বানানে আলাদা, উচ্চারণে তে-এর মতো)"},{"id":"a23","urdu":"ظ","name_bn":"জোয়ে","sound_bn":"জ (বানানে আলাদা, উচ্চারণে জে-এর মতো)"},{"id":"a24","urdu":"ع","name_bn":"আইন","sound_bn":"গলার গভীর থেকে থেমে আসা স্বরধ্বনি"},{"id":"a25","urdu":"غ","name_bn":"গাইন","sound_bn":"ঘর্ষণজাত গ় ধ্বনি"},{"id":"a26","urdu":"ف","name_bn":"ফে","sound_bn":"ফ"},{"id":"a27","urdu":"ق","name_bn":"ক্বাফ","sound_bn":"ক (গলার গভীর থেকে)"},{"id":"a28","urdu":"ک","name_bn":"কাফ","sound_bn":"ক"},{"id":"a29","urdu":"گ","name_bn":"গাফ","sound_bn":"গ"},{"id":"a30","urdu":"ل","name_bn":"লাম","sound_bn":"ল"},{"id":"a31","urdu":"م","name_bn":"মীম","sound_bn":"ম"},{"id":"a32","urdu":"ن","name_bn":"নূন","sound_bn":"ন"},{"id":"a33","urdu":"ں","name_bn":"নূন গুন্না","sound_bn":"নাকি সুর (nasal ধ্বনি)"},{"id":"a34","urdu":"و","name_bn":"ওয়াও","sound_bn":"ও / ব"},{"id":"a35","urdu":"ہ","name_bn":"গোল হে","sound_bn":"হ"},{"id":"a36","urdu":"ھ","name_bn":"দো-চশমি হে","sound_bn":"আগের বর্ণে মিশে aspiration তৈরি করে (kh, gh, ph)"},{"id":"a37","urdu":"ء","name_bn":"হামযা","sound_bn":"স্বরধ্বনির আকস্মিক বিরতি"},{"id":"a38","urdu":"ی","name_bn":"ছোটি ইয়ে","sound_bn":"ই / য়"},{"id":"a39","urdu":"ے","name_bn":"বড়ি ইয়ে","sound_bn":"এ"}]};
 /* ==========================================================================
    এসো উর্দু শিখি — Application logic
    No build step, no framework. Everything below is plain ES2017+ JS.
@@ -997,11 +974,9 @@ const WORDS_DATA = {"meta":{"app":"esho-urdu-shikhi","version":"1.0.0","descript
   const DEFAULT_PROGRESS = () => ({
     installDate: todayStr(),
     lastUnlockDayIndex: -1,
-    streak: 0,
     library: {},          // { wordId: { firstUnlockedAt, dayIndex } }
     spelling: { attempts: 0, correct: 0 },
-    quiz: { attempts: 0, correct: 0 },
-    seenHotspots: []
+    quiz: { attempts: 0, correct: 0 }
   });
 
   /* ------------------------------------------------------------------------
@@ -1016,8 +991,7 @@ const WORDS_DATA = {"meta":{"app":"esho-urdu-shikhi","version":"1.0.0","descript
       return Object.assign(DEFAULT_PROGRESS(), parsed, {
         library: parsed.library || {},
         spelling: Object.assign({ attempts: 0, correct: 0 }, parsed.spelling),
-        quiz: Object.assign({ attempts: 0, correct: 0 }, parsed.quiz),
-        seenHotspots: parsed.seenHotspots || []
+        quiz: Object.assign({ attempts: 0, correct: 0 }, parsed.quiz)
       });
     } catch (e) {
       console.warn('Progress load failed, starting fresh.', e);
@@ -1129,8 +1103,7 @@ const WORDS_DATA = {"meta":{"app":"esho-urdu-shikhi","version":"1.0.0","descript
     study: { filter: 'all', index: 0, list: [] },
     poetic: { index: 0, list: [] },
     spelling: { current: null, letters: [], tiles: [], answer: [], usedIds: new Set(), pool: [] },
-    quiz: { current: null, options: [], answered: false, pool: [] },
-    visual: { scene: null }
+    quiz: { current: null, options: [], answered: false, pool: [] }
   };
 
   /* ------------------------------------------------------------------------
@@ -1146,7 +1119,7 @@ const WORDS_DATA = {"meta":{"app":"esho-urdu-shikhi","version":"1.0.0","descript
   function poeticWords() { return state.words.filter((w) => w.is_poetic); }
 
   /* ------------------------------------------------------------------------
-     7. Streak / unlock engine
+     7. Daily unlock engine (no streak tracking — just "opened today or not")
      ------------------------------------------------------------------------ */
   function isTodayUnlocked() {
     return currentDayIndex() === state.progress.lastUnlockDayIndex;
@@ -1155,7 +1128,6 @@ const WORDS_DATA = {"meta":{"app":"esho-urdu-shikhi","version":"1.0.0","descript
     const idx = currentDayIndex();
     if (idx === state.progress.lastUnlockDayIndex) return wordOfDayForIndex(idx);
 
-    state.progress.streak = (state.progress.lastUnlockDayIndex === idx - 1) ? state.progress.streak + 1 : 1;
     state.progress.lastUnlockDayIndex = idx;
 
     const word = wordOfDayForIndex(idx);
@@ -1175,7 +1147,7 @@ const WORDS_DATA = {"meta":{"app":"esho-urdu-shikhi","version":"1.0.0","descript
     study: renderStudyView,
     poetic: renderPoeticView,
     library: renderLibraryView,
-    visual: renderVisualView
+    alphabet: renderAlphabetView
   };
 
   function goto(view) {
@@ -1195,9 +1167,6 @@ const WORDS_DATA = {"meta":{"app":"esho-urdu-shikhi","version":"1.0.0","descript
     const unlocked = isTodayUnlocked();
     const word = wordOfDayForIndex(idx);
 
-    document.getElementById('streak-count').textContent = state.progress.streak;
-    document.getElementById('streak-flame').classList.toggle('is-active', state.progress.streak > 0);
-
     const wrap = document.getElementById('wod-wrap');
     wrap.querySelectorAll('.seal, .wod-card').forEach((n) => n.remove());
 
@@ -1206,8 +1175,8 @@ const WORDS_DATA = {"meta":{"app":"esho-urdu-shikhi","version":"1.0.0","descript
     } else {
       const seal = el(`
         <button class="seal" aria-label="আজকের শব্দ খুলুন">
-          🔒
-          <span class="seal-hint">খুলতে ট্যাপ করুন</span>
+          <span class="seal-title">শব্দটি খুলুন</span>
+          <span class="seal-hint">ট্যাপ করুন</span>
         </button>`);
       seal.addEventListener('click', () => {
         seal.classList.add('is-cracking');
@@ -1218,10 +1187,8 @@ const WORDS_DATA = {"meta":{"app":"esho-urdu-shikhi","version":"1.0.0","descript
           const card = buildWodCard(opened, false);
           wrap.appendChild(card);
           requestAnimationFrame(() => card.classList.add('is-revealed'));
-          document.getElementById('streak-count').textContent = state.progress.streak;
-          document.getElementById('streak-flame').classList.add('is-active');
           renderDayStrip();
-          showToast(`দিন ${state.progress.streak} — চালিয়ে যাও! 🔥`);
+          showToast('আজকের শব্দ সংগ্রহে যুক্ত হলো');
         }, 420);
       });
       wrap.appendChild(seal);
@@ -1237,9 +1204,11 @@ const WORDS_DATA = {"meta":{"app":"esho-urdu-shikhi","version":"1.0.0","descript
         <span class="type-tag">${isProverb ? 'প্রবাদ' : 'কাব্যিক শব্দ'}</span>
         <div class="urdu-display">${word.urdu}</div>
         <div class="meaning">${escapeHtml(word.bengali_meaning)}</div>
+        <button class="speak-link" type="button">উচ্চারণ শুনুন</button>
         ${word.poetic_note ? `<div class="poetic-note bn-serif">${escapeHtml(word.poetic_note)}</div>` : ''}
       </div>
     `);
+    card.querySelector('.speak-link').addEventListener('click', () => speakUrdu(word.urdu));
     return card;
   }
 
@@ -1308,10 +1277,10 @@ const WORDS_DATA = {"meta":{"app":"esho-urdu-shikhi","version":"1.0.0","descript
       <div class="prompt-card">
         <div class="meaning">${escapeHtml(word.bengali_meaning)}</div>
         <div class="translit-hint">উচ্চারণ: ${escapeHtml(word.bengali_pron)}</div>
-        <button class="speak-btn" aria-label="উচ্চারণ শুনুন">🔊</button>
+        <button class="speak-link" type="button">উচ্চারণ শুনুন</button>
       </div>
     `);
-    prompt.querySelector('.speak-btn').addEventListener('click', () => speakUrdu(word.urdu));
+    prompt.querySelector('.speak-link').addEventListener('click', () => speakUrdu(word.urdu));
     panel.appendChild(prompt);
 
     const slot = el(`<div class="answer-slot"><span class="urdu"></span></div>`);
@@ -1510,6 +1479,7 @@ const WORDS_DATA = {"meta":{"app":"esho-urdu-shikhi","version":"1.0.0","descript
       <div class="study-card">
         <div class="urdu-display">${word.urdu}</div>
         <div class="translit">${escapeHtml(word.transliteration)} • ${escapeHtml(word.bengali_pron)}</div>
+        <button class="speak-link" type="button">উচ্চারণ শুনুন</button>
         <div class="divider"></div>
         <div class="meaning-row">
           <span class="meaning">${escapeHtml(word.bengali_meaning)}</span>
@@ -1523,6 +1493,7 @@ const WORDS_DATA = {"meta":{"app":"esho-urdu-shikhi","version":"1.0.0","descript
           </div>` : ''}
       </div>
     `);
+    card.querySelector('.speak-link').addEventListener('click', () => speakUrdu(word.urdu));
     stage.appendChild(card);
     document.getElementById('study-counter').textContent = `${state.study.index + 1} / ${list.length}`;
   }
@@ -1596,7 +1567,6 @@ const WORDS_DATA = {"meta":{"app":"esho-urdu-shikhi","version":"1.0.0","descript
     document.getElementById('library-stats').innerHTML = `
       <div class="btn-row" style="gap:10px">
         <span class="pill">সংগ্রহে ${entries.length}টি শব্দ</span>
-        <span class="pill gulnar">🔥 ${state.progress.streak} দিনের ধারা</span>
       </div>
     `;
 
@@ -1623,99 +1593,23 @@ const WORDS_DATA = {"meta":{"app":"esho-urdu-shikhi","version":"1.0.0","descript
   }
 
   /* ------------------------------------------------------------------------
-     14. VISUAL VOCABULARY MODE
+     14. URDU ALPHABET MODE
      ------------------------------------------------------------------------ */
-  function sceneSvg(sceneId) {
-    if (sceneId === 'room') {
-      return `
-        <svg viewBox="0 0 300 375" xmlns="http://www.w3.org/2000/svg">
-          <rect width="300" height="375" fill="#EDE3CC"/>
-          <rect x="0" y="0" width="300" height="230" fill="#E3D6B4"/>
-          <rect x="0" y="230" width="300" height="145" fill="#C9A26A"/>
-          <rect x="20" y="40" width="80" height="100" rx="4" fill="#F7F1E1" stroke="#B99A5B" stroke-width="3"/>
-          <line x1="60" y1="40" x2="60" y2="140" stroke="#B99A5B" stroke-width="3"/>
-          <line x1="20" y1="90" x2="100" y2="90" stroke="#B99A5B" stroke-width="3"/>
-          <rect x="220" y="30" width="55" height="120" rx="3" fill="#7A5A3A"/>
-          <rect x="225" y="35" width="45" height="110" rx="2" fill="#95765230"/>
-          <circle cx="257" cy="90" r="4" fill="#3A2A18"/>
-          <rect x="90" y="230" width="140" height="14" fill="#8A6A45"/>
-          <rect x="100" y="244" width="10" height="60" fill="#8A6A45"/>
-          <rect x="210" y="244" width="10" height="60" fill="#8A6A45"/>
-          <rect x="60" y="260" width="55" height="70" fill="#4A6B8A"/>
-          <rect x="60" y="260" width="55" height="10" fill="#5C7E9C"/>
-          <ellipse cx="185" cy="255" rx="16" ry="10" fill="#DCEAF2" stroke="#9CB8C9" stroke-width="2"/>
-          <rect x="178" y="255" width="14" height="26" fill="#DCEAF2" stroke="#9CB8C9" stroke-width="2"/>
-        </svg>`;
-    }
-    return `
-      <svg viewBox="0 0 300 375" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#0F1830"/>
-            <stop offset="100%" stop-color="#2E4270"/>
-          </linearGradient>
-        </defs>
-        <rect width="300" height="375" fill="url(#sky)"/>
-        <circle cx="220" cy="80" r="42" fill="#F3E9D2" opacity="0.95"/>
-        <circle cx="205" cy="68" r="42" fill="#0F1830" opacity="0.55"/>
-        <path d="M0 300 L60 260 L130 300 L200 250 L300 300 L300 375 L0 375 Z" fill="#182647"/>
-        <path d="M0 320 L80 300 L160 330 L240 300 L300 320 L300 375 L0 375 Z" fill="#101B36"/>
-      </svg>`;
-  }
-
-  function renderVisualView() {
-    const scenes = Object.keys(state.data.scenes);
-    if (!state.visual.scene) state.visual.scene = scenes[0];
-
-    const tabs = document.getElementById('scene-tabs');
-    tabs.innerHTML = '';
-    scenes.forEach((id) => {
-      const btn = document.createElement('button');
-      btn.className = 'scene-tab' + (id === state.visual.scene ? ' is-active' : '');
-      btn.textContent = state.data.scenes[id].label_bn;
-      btn.addEventListener('click', () => { state.visual.scene = id; renderVisualView(); });
-      tabs.appendChild(btn);
-    });
-
-    const stage = document.getElementById('scene-stage');
-    stage.innerHTML = sceneSvg(state.visual.scene);
-    const wordsInScene = state.words.filter((w) => w.scene === state.visual.scene);
-    wordsInScene.forEach((word) => {
-      const dot = document.createElement('button');
-      dot.className = 'hotspot' + (state.progress.seenHotspots.includes(word.id) ? ' is-seen' : '');
-      dot.style.left = word.scene_position.x + '%';
-      dot.style.top = word.scene_position.y + '%';
-      dot.textContent = '?';
-      dot.setAttribute('aria-label', word.bengali_meaning);
-      dot.addEventListener('click', () => openHotspot(word, dot));
-      stage.appendChild(dot);
-    });
-  }
-
-  function openHotspot(word, dotEl) {
-    if (!state.progress.seenHotspots.includes(word.id)) {
-      state.progress.seenHotspots.push(word.id);
-      saveProgress();
-    }
-    dotEl.classList.add('is-seen');
-
-    const backdrop = el(`
-      <div class="scene-popover-backdrop">
-        <div class="scene-popover">
-          <div class="urdu-display">${word.urdu}</div>
-          <div class="meaning">${escapeHtml(word.bengali_meaning)}</div>
-          <div class="translit">${escapeHtml(word.transliteration)} • ${escapeHtml(word.bengali_pron)}</div>
-          <div class="btn-row">
-            <button class="btn btn-outline" id="hs-speak">🔊 শুনুন</button>
-            <button class="btn btn-primary" id="hs-close">বন্ধ করো</button>
-          </div>
+  function renderAlphabetView() {
+    const grid = document.getElementById('alphabet-grid');
+    grid.innerHTML = '';
+    state.data.alphabet.forEach((letter) => {
+      const cell = el(`
+        <div class="alphabet-cell">
+          <div class="urdu">${letter.urdu}</div>
+          <div class="name-bn">${escapeHtml(letter.name_bn)}</div>
+          <div class="sound-bn">${escapeHtml(letter.sound_bn)}</div>
+          <button class="speak-link" type="button">উচ্চারণ শুনুন</button>
         </div>
-      </div>
-    `);
-    backdrop.addEventListener('click', (e) => { if (e.target === backdrop) backdrop.remove(); });
-    backdrop.querySelector('#hs-speak').addEventListener('click', () => speakUrdu(word.urdu));
-    backdrop.querySelector('#hs-close').addEventListener('click', () => backdrop.remove());
-    document.body.appendChild(backdrop);
+      `);
+      cell.querySelector('.speak-link').addEventListener('click', () => speakUrdu(letter.urdu));
+      grid.appendChild(cell);
+    });
   }
 
   /* ------------------------------------------------------------------------

@@ -8,7 +8,7 @@
   otherwise returning visitors may keep seeing the old cached version.
 */
 
-const CACHE_VERSION = 'euk-v2';
+const CACHE_VERSION = 'euk-v3';
 const SHELL_CACHE = `esho-urdu-shell-${CACHE_VERSION}`;
 
 const SHELL_FILES = [
