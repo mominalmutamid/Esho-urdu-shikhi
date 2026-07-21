@@ -1,17 +1,32 @@
 /*
   Service worker for এসো উর্দু শিখি
-  Everything (HTML, CSS, JS, vocabulary data, icons) lives inside index.html
-  and manifest.json — there are no subfolders to break during a GitHub upload.
+  ------------------------------------------------------------------------
+  Structure (back to split files, since the real problem was GitHub's
+  drag-and-drop uploader flattening folders — not the folders themselves):
 
-  Strategy: NETWORK-FIRST for the app shell (index.html / '/'), falling back
-  to cache only when offline. This means from now on, updating the app is a
-  single-file operation — just replace index.html and re-upload. There is no
-  need to bump a cache version here for ordinary content changes, since the
-  service worker always prefers whatever is live on the server when online.
+    index.html            app shell (HTML, references css/js below)
+    css/style.css
+    js/app.js
+    data/words.json         <- grows freely, no effect on shell size
+    manifest.json           <- icons embedded as base64, no icon files needed
+    sw.js                    <- this file
+
+  Strategy: NETWORK-FIRST for every one of the files above, falling back to
+  cache only when offline. This means updating ANY file — the dictionary,
+  the styling, the logic — just means replacing that one file and
+  re-uploading. No cache-version bump needed, no waiting, nothing else to
+  touch here.
 */
 
-const CACHE_NAME = 'esho-urdu-shell-v1';
-const SHELL_FILES = ['./', './index.html', './manifest.json'];
+const CACHE_NAME = 'esho-urdu-shell-v3';
+const SHELL_FILES = [
+  './',
+  './index.html',
+  './css/style.css',
+  './js/app.js',
+  './data/words.json',
+  './manifest.json'
+];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(

@@ -15,11 +15,10 @@
   const DEFAULT_PROGRESS = () => ({
     installDate: todayStr(),
     lastUnlockDayIndex: -1,
-    streak: 0,
     library: {},          // { wordId: { firstUnlockedAt, dayIndex } }
     spelling: { attempts: 0, correct: 0 },
     quiz: { attempts: 0, correct: 0 },
-    seenHotspots: []
+    sentenceBuild: { attempts: 0, correct: 0 }
   });
 
   /* ------------------------------------------------------------------------
@@ -35,7 +34,7 @@
         library: parsed.library || {},
         spelling: Object.assign({ attempts: 0, correct: 0 }, parsed.spelling),
         quiz: Object.assign({ attempts: 0, correct: 0 }, parsed.quiz),
-        seenHotspots: parsed.seenHotspots || []
+        sentenceBuild: Object.assign({ attempts: 0, correct: 0 }, parsed.sentenceBuild)
       });
     } catch (e) {
       console.warn('Progress load failed, starting fresh.', e);
@@ -148,23 +147,34 @@
     poetic: { index: 0, list: [] },
     spelling: { current: null, letters: [], tiles: [], answer: [], usedIds: new Set(), pool: [] },
     quiz: { current: null, options: [], answered: false, pool: [] },
-    visual: { scene: null }
+    sentenceBuild: { current: null, tier: 'easy', tokens: [], tiles: [], answer: [], usedIds: new Set() }
   };
 
   /* ------------------------------------------------------------------------
      6. Data access helpers
      ------------------------------------------------------------------------ */
-  function findWord(id) { return state.words.find((w) => w.id === id); }
+  function findWord(id) {
+    return state.words.find((w) => w.id === id) || (state.data.classical_poetry || []).find((w) => w.id === id);
+  }
   function wordOfDayForIndex(idx) {
     const seq = state.data.word_of_day_sequence;
     const i = ((idx % seq.length) + seq.length) % seq.length;
     return findWord(seq[i]);
   }
   function nonProverbWords() { return state.words.filter((w) => w.type !== 'proverb'); }
-  function poeticWords() { return state.words.filter((w) => w.is_poetic); }
+  function poeticWords() { return [...state.words.filter((w) => w.is_poetic), ...(state.data.classical_poetry || [])]; }
+
+  function sentencePool(tier) {
+    if (tier === 'hard') {
+      return state.words.filter((w) => w.type === 'proverb')
+        .map((w) => ({ urdu: w.urdu, bengali: w.bengali_meaning, pron_bn: w.bengali_pron }));
+    }
+    return state.words.filter((w) => w.example_sentence)
+      .map((w) => ({ urdu: w.example_sentence.urdu, bengali: w.example_sentence.bengali, pron_bn: w.example_sentence.pron_bn }));
+  }
 
   /* ------------------------------------------------------------------------
-     7. Streak / unlock engine
+     7. Daily unlock engine (no streak tracking — just "opened today or not")
      ------------------------------------------------------------------------ */
   function isTodayUnlocked() {
     return currentDayIndex() === state.progress.lastUnlockDayIndex;
@@ -173,7 +183,6 @@
     const idx = currentDayIndex();
     if (idx === state.progress.lastUnlockDayIndex) return wordOfDayForIndex(idx);
 
-    state.progress.streak = (state.progress.lastUnlockDayIndex === idx - 1) ? state.progress.streak + 1 : 1;
     state.progress.lastUnlockDayIndex = idx;
 
     const word = wordOfDayForIndex(idx);
@@ -193,7 +202,8 @@
     study: renderStudyView,
     poetic: renderPoeticView,
     library: renderLibraryView,
-    visual: renderVisualView
+    alphabet: renderAlphabetView,
+    sentence: renderSentenceView
   };
 
   function goto(view) {
@@ -213,9 +223,6 @@
     const unlocked = isTodayUnlocked();
     const word = wordOfDayForIndex(idx);
 
-    document.getElementById('streak-count').textContent = state.progress.streak;
-    document.getElementById('streak-flame').classList.toggle('is-active', state.progress.streak > 0);
-
     const wrap = document.getElementById('wod-wrap');
     wrap.querySelectorAll('.seal, .wod-card').forEach((n) => n.remove());
 
@@ -224,8 +231,8 @@
     } else {
       const seal = el(`
         <button class="seal" aria-label="আজকের শব্দ খুলুন">
-          🔒
-          <span class="seal-hint">খুলতে ট্যাপ করুন</span>
+          <span class="seal-title">শব্দটি খুলুন</span>
+          <span class="seal-hint">ট্যাপ করুন</span>
         </button>`);
       seal.addEventListener('click', () => {
         seal.classList.add('is-cracking');
@@ -236,10 +243,8 @@
           const card = buildWodCard(opened, false);
           wrap.appendChild(card);
           requestAnimationFrame(() => card.classList.add('is-revealed'));
-          document.getElementById('streak-count').textContent = state.progress.streak;
-          document.getElementById('streak-flame').classList.add('is-active');
           renderDayStrip();
-          showToast(`দিন ${state.progress.streak} — চালিয়ে যাও! 🔥`);
+          showToast('আজকের শব্দ সংগ্রহে যুক্ত হলো');
         }, 420);
       });
       wrap.appendChild(seal);
@@ -250,14 +255,19 @@
 
   function buildWodCard(word, alreadyOpen) {
     const isProverb = word.type === 'proverb';
+    const isClassical = word.type === 'classical_poetry';
+    const tagLabel = isClassical ? 'ক্লাসিক কবিতা' : (isProverb ? 'প্রবাদ' : 'কাব্যিক শব্দ');
     const card = el(`
       <div class="wod-card ${alreadyOpen ? 'already-open is-revealed' : ''}">
-        <span class="type-tag">${isProverb ? 'প্রবাদ' : 'কাব্যিক শব্দ'}</span>
+        <span class="type-tag">${tagLabel}</span>
         <div class="urdu-display">${word.urdu}</div>
+        ${isClassical ? `<div class="poet-credit">— ${escapeHtml(word.poet_bn)} (${word.poet_urdu})</div>` : ''}
         <div class="meaning">${escapeHtml(word.bengali_meaning)}</div>
+        <button class="speak-link" type="button">উচ্চারণ শুনুন</button>
         ${word.poetic_note ? `<div class="poetic-note bn-serif">${escapeHtml(word.poetic_note)}</div>` : ''}
       </div>
     `);
+    card.querySelector('.speak-link').addEventListener('click', () => speakUrdu(word.urdu));
     return card;
   }
 
@@ -326,10 +336,10 @@
       <div class="prompt-card">
         <div class="meaning">${escapeHtml(word.bengali_meaning)}</div>
         <div class="translit-hint">উচ্চারণ: ${escapeHtml(word.bengali_pron)}</div>
-        <button class="speak-btn" aria-label="উচ্চারণ শুনুন">🔊</button>
+        <button class="speak-link" type="button">উচ্চারণ শুনুন</button>
       </div>
     `);
-    prompt.querySelector('.speak-btn').addEventListener('click', () => speakUrdu(word.urdu));
+    prompt.querySelector('.speak-link').addEventListener('click', () => speakUrdu(word.urdu));
     panel.appendChild(prompt);
 
     const slot = el(`<div class="answer-slot"><span class="urdu"></span></div>`);
@@ -528,6 +538,7 @@
       <div class="study-card">
         <div class="urdu-display">${word.urdu}</div>
         <div class="translit">${escapeHtml(word.transliteration)} • ${escapeHtml(word.bengali_pron)}</div>
+        <button class="speak-link" type="button">উচ্চারণ শুনুন</button>
         <div class="divider"></div>
         <div class="meaning-row">
           <span class="meaning">${escapeHtml(word.bengali_meaning)}</span>
@@ -539,8 +550,16 @@
             <span class="urdu">${word.antonym.urdu}</span>
             <span>— ${escapeHtml(word.antonym.bengali_meaning)}</span>
           </div>` : ''}
+        ${word.example_sentence ? `
+          <div class="example-sentence">
+            <span class="ex-label">উদাহরণ বাক্য</span>
+            <div class="ex-urdu urdu">${word.example_sentence.urdu}</div>
+            <div class="ex-bengali">${escapeHtml(word.example_sentence.bengali)}</div>
+            ${word.example_sentence.pron_bn ? `<div class="ex-pron">উচ্চারণ: ${escapeHtml(word.example_sentence.pron_bn)}</div>` : ''}
+          </div>` : ''}
       </div>
     `);
+    card.querySelector('.speak-link').addEventListener('click', () => speakUrdu(word.urdu));
     stage.appendChild(card);
     document.getElementById('study-counter').textContent = `${state.study.index + 1} / ${list.length}`;
   }
@@ -575,12 +594,25 @@
       return;
     }
     const word = list[state.poetic.index];
+    const isClassical = word.type === 'classical_poetry';
     inner.innerHTML = `
       <div class="urdu-display">${word.urdu}</div>
+      ${isClassical ? `<div class="poet-credit">— ${escapeHtml(word.poet_bn)} (${word.poet_urdu})</div>` : ''}
       <div class="translit">${escapeHtml(word.transliteration)}</div>
+      ${isClassical ? `<div class="ex-pron" style="margin-bottom:10px">উচ্চারণ: ${escapeHtml(word.bengali_pron)}</div>` : ''}
       <div class="meaning">${escapeHtml(word.bengali_meaning)}</div>
+      <button class="speak-link" type="button">উচ্চারণ শুনুন</button>
       ${word.poetic_note ? `<p class="poetic-note">${escapeHtml(word.poetic_note)}</p>` : ''}
+      ${word.example_sentence ? `
+        <div class="example-sentence">
+          <span class="ex-label">উদাহরণ বাক্য</span>
+          <div class="ex-urdu urdu">${word.example_sentence.urdu}</div>
+          <div class="ex-bengali">${escapeHtml(word.example_sentence.bengali)}</div>
+          ${word.example_sentence.pron_bn ? `<div class="ex-pron">উচ্চারণ: ${escapeHtml(word.example_sentence.pron_bn)}</div>` : ''}
+        </div>` : ''}
     `;
+    const speakBtn = inner.querySelector('.speak-link');
+    if (speakBtn) speakBtn.addEventListener('click', () => speakUrdu(word.urdu));
     if (animate) {
       inner.classList.remove('is-flipping');
       void inner.offsetWidth;
@@ -614,7 +646,6 @@
     document.getElementById('library-stats').innerHTML = `
       <div class="btn-row" style="gap:10px">
         <span class="pill">সংগ্রহে ${entries.length}টি শব্দ</span>
-        <span class="pill gulnar">🔥 ${state.progress.streak} দিনের ধারা</span>
       </div>
     `;
 
@@ -641,99 +672,133 @@
   }
 
   /* ------------------------------------------------------------------------
-     14. VISUAL VOCABULARY MODE
+     14. URDU ALPHABET MODE
      ------------------------------------------------------------------------ */
-  function sceneSvg(sceneId) {
-    if (sceneId === 'room') {
-      return `
-        <svg viewBox="0 0 300 375" xmlns="http://www.w3.org/2000/svg">
-          <rect width="300" height="375" fill="#EDE3CC"/>
-          <rect x="0" y="0" width="300" height="230" fill="#E3D6B4"/>
-          <rect x="0" y="230" width="300" height="145" fill="#C9A26A"/>
-          <rect x="20" y="40" width="80" height="100" rx="4" fill="#F7F1E1" stroke="#B99A5B" stroke-width="3"/>
-          <line x1="60" y1="40" x2="60" y2="140" stroke="#B99A5B" stroke-width="3"/>
-          <line x1="20" y1="90" x2="100" y2="90" stroke="#B99A5B" stroke-width="3"/>
-          <rect x="220" y="30" width="55" height="120" rx="3" fill="#7A5A3A"/>
-          <rect x="225" y="35" width="45" height="110" rx="2" fill="#95765230"/>
-          <circle cx="257" cy="90" r="4" fill="#3A2A18"/>
-          <rect x="90" y="230" width="140" height="14" fill="#8A6A45"/>
-          <rect x="100" y="244" width="10" height="60" fill="#8A6A45"/>
-          <rect x="210" y="244" width="10" height="60" fill="#8A6A45"/>
-          <rect x="60" y="260" width="55" height="70" fill="#4A6B8A"/>
-          <rect x="60" y="260" width="55" height="10" fill="#5C7E9C"/>
-          <ellipse cx="185" cy="255" rx="16" ry="10" fill="#DCEAF2" stroke="#9CB8C9" stroke-width="2"/>
-          <rect x="178" y="255" width="14" height="26" fill="#DCEAF2" stroke="#9CB8C9" stroke-width="2"/>
-        </svg>`;
-    }
-    return `
-      <svg viewBox="0 0 300 375" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#0F1830"/>
-            <stop offset="100%" stop-color="#2E4270"/>
-          </linearGradient>
-        </defs>
-        <rect width="300" height="375" fill="url(#sky)"/>
-        <circle cx="220" cy="80" r="42" fill="#F3E9D2" opacity="0.95"/>
-        <circle cx="205" cy="68" r="42" fill="#0F1830" opacity="0.55"/>
-        <path d="M0 300 L60 260 L130 300 L200 250 L300 300 L300 375 L0 375 Z" fill="#182647"/>
-        <path d="M0 320 L80 300 L160 330 L240 300 L300 320 L300 375 L0 375 Z" fill="#101B36"/>
-      </svg>`;
-  }
-
-  function renderVisualView() {
-    const scenes = Object.keys(state.data.scenes);
-    if (!state.visual.scene) state.visual.scene = scenes[0];
-
-    const tabs = document.getElementById('scene-tabs');
-    tabs.innerHTML = '';
-    scenes.forEach((id) => {
-      const btn = document.createElement('button');
-      btn.className = 'scene-tab' + (id === state.visual.scene ? ' is-active' : '');
-      btn.textContent = state.data.scenes[id].label_bn;
-      btn.addEventListener('click', () => { state.visual.scene = id; renderVisualView(); });
-      tabs.appendChild(btn);
-    });
-
-    const stage = document.getElementById('scene-stage');
-    stage.innerHTML = sceneSvg(state.visual.scene);
-    const wordsInScene = state.words.filter((w) => w.scene === state.visual.scene);
-    wordsInScene.forEach((word) => {
-      const dot = document.createElement('button');
-      dot.className = 'hotspot' + (state.progress.seenHotspots.includes(word.id) ? ' is-seen' : '');
-      dot.style.left = word.scene_position.x + '%';
-      dot.style.top = word.scene_position.y + '%';
-      dot.textContent = '?';
-      dot.setAttribute('aria-label', word.bengali_meaning);
-      dot.addEventListener('click', () => openHotspot(word, dot));
-      stage.appendChild(dot);
-    });
-  }
-
-  function openHotspot(word, dotEl) {
-    if (!state.progress.seenHotspots.includes(word.id)) {
-      state.progress.seenHotspots.push(word.id);
-      saveProgress();
-    }
-    dotEl.classList.add('is-seen');
-
-    const backdrop = el(`
-      <div class="scene-popover-backdrop">
-        <div class="scene-popover">
-          <div class="urdu-display">${word.urdu}</div>
-          <div class="meaning">${escapeHtml(word.bengali_meaning)}</div>
-          <div class="translit">${escapeHtml(word.transliteration)} • ${escapeHtml(word.bengali_pron)}</div>
-          <div class="btn-row">
-            <button class="btn btn-outline" id="hs-speak">🔊 শুনুন</button>
-            <button class="btn btn-primary" id="hs-close">বন্ধ করো</button>
-          </div>
+  function renderAlphabetView() {
+    const grid = document.getElementById('alphabet-grid');
+    grid.innerHTML = '';
+    state.data.alphabet.forEach((letter) => {
+      const cell = el(`
+        <div class="alphabet-cell">
+          <div class="urdu">${letter.urdu}</div>
+          <div class="name-bn">${escapeHtml(letter.name_bn)}</div>
+          <div class="sound-bn">${escapeHtml(letter.sound_bn)}</div>
+          <button class="speak-link" type="button">উচ্চারণ শুনুন</button>
         </div>
+      `);
+      cell.querySelector('.speak-link').addEventListener('click', () => speakUrdu(letter.urdu));
+      grid.appendChild(cell);
+    });
+  }
+
+  /* ------------------------------------------------------------------------
+     14b. SENTENCE FORMATION MODE (বাক্য গঠন মোড)
+     Reuses the same verified example sentences (word level) and proverbs
+     (full-sentence level) already in the dictionary — arrange word-tiles
+     into the correct order rather than typing freely, so there is always
+     exactly one correct, pre-verified answer.
+     ------------------------------------------------------------------------ */
+  function renderSentenceView() {
+    document.querySelectorAll('#view-sentence .tier-tab').forEach((b) => {
+      b.classList.toggle('is-active', b.dataset.tier === state.sentenceBuild.tier);
+    });
+    if (!state.sentenceBuild.current) newSentenceRound();
+    else renderSentencePanel();
+  }
+
+  function newSentenceRound() {
+    const pool = sentencePool(state.sentenceBuild.tier);
+    if (!pool.length) return;
+    let entry = randomChoice(pool);
+    if (state.sentenceBuild.current && pool.length > 1) {
+      while (entry.urdu === state.sentenceBuild.current.urdu) entry = randomChoice(pool);
+    }
+    state.sentenceBuild.current = entry;
+    const tokens = entry.urdu.split(' ').map((w, i) => ({ text: w, id: i }));
+    state.sentenceBuild.tokens = tokens;
+    state.sentenceBuild.tiles = shuffle(tokens);
+    state.sentenceBuild.answer = [];
+    state.sentenceBuild.usedIds = new Set();
+    renderSentencePanel();
+  }
+
+  function renderSentencePanel() {
+    const panel = document.getElementById('sentence-panel');
+    const entry = state.sentenceBuild.current;
+    panel.innerHTML = '';
+
+    const prompt = el(`
+      <div class="prompt-card">
+        <div class="meaning">${escapeHtml(entry.bengali)}</div>
+        ${entry.pron_bn ? `<div class="translit-hint">উচ্চারণ: ${escapeHtml(entry.pron_bn)}</div>` : ''}
       </div>
     `);
-    backdrop.addEventListener('click', (e) => { if (e.target === backdrop) backdrop.remove(); });
-    backdrop.querySelector('#hs-speak').addEventListener('click', () => speakUrdu(word.urdu));
-    backdrop.querySelector('#hs-close').addEventListener('click', () => backdrop.remove());
-    document.body.appendChild(backdrop);
+    panel.appendChild(prompt);
+
+    const slot = el(`<div class="answer-slot"><span class="urdu"></span></div>`);
+    slot.querySelector('.urdu').textContent = state.sentenceBuild.answer.map((t) => t.text).join(' ');
+    panel.appendChild(slot);
+
+    const pool = el(`<div class="word-tile-pool"></div>`);
+    state.sentenceBuild.tiles.forEach((tile) => {
+      const btn = document.createElement('button');
+      btn.className = 'word-tile urdu';
+      btn.textContent = tile.text;
+      if (state.sentenceBuild.usedIds.has(tile.id)) btn.classList.add('is-used');
+      btn.addEventListener('click', () => onSentenceTileTap(tile));
+      pool.appendChild(btn);
+    });
+    panel.appendChild(pool);
+
+    const actions = el(`
+      <div class="spelling-actions">
+        <button class="btn btn-outline" id="sentence-clear">মুছে ফেলো</button>
+        <button class="btn btn-outline" id="sentence-skip">এড়িয়ে যাও</button>
+      </div>
+    `);
+    actions.querySelector('#sentence-clear').addEventListener('click', () => {
+      state.sentenceBuild.answer = [];
+      state.sentenceBuild.usedIds = new Set();
+      renderSentencePanel();
+    });
+    actions.querySelector('#sentence-skip').addEventListener('click', newSentenceRound);
+    panel.appendChild(actions);
+
+    const stats = state.progress.sentenceBuild;
+    panel.appendChild(el(`
+      <div class="score-row">
+        <span>সঠিক: <b>${stats.correct}</b></span>
+        <span>চেষ্টা: <b>${stats.attempts}</b></span>
+      </div>
+    `));
+  }
+
+  function onSentenceTileTap(tile) {
+    if (state.sentenceBuild.usedIds.has(tile.id)) return;
+    state.sentenceBuild.usedIds.add(tile.id);
+    state.sentenceBuild.answer.push(tile);
+    renderSentencePanel();
+
+    if (state.sentenceBuild.answer.length === state.sentenceBuild.tokens.length) {
+      const built = state.sentenceBuild.answer.map((t) => t.text).join(' ');
+      const correct = built === state.sentenceBuild.current.urdu;
+      state.progress.sentenceBuild.attempts++;
+      const slotEl = document.querySelector('#sentence-panel .answer-slot');
+      if (correct) {
+        state.progress.sentenceBuild.correct++;
+        slotEl.classList.add('is-correct');
+        saveProgress();
+        setTimeout(newSentenceRound, 1100);
+      } else {
+        slotEl.classList.add('is-wrong');
+        saveProgress();
+        setTimeout(() => {
+          state.sentenceBuild.answer = [];
+          state.sentenceBuild.usedIds = new Set();
+          renderSentencePanel();
+        }, 900);
+      }
+    }
   }
 
   /* ------------------------------------------------------------------------
@@ -750,6 +815,14 @@
       btn.addEventListener('click', () => {
         state.spellingSubtab = btn.dataset.subtab;
         renderSpellingView();
+      });
+    });
+    document.querySelectorAll('.tier-tab').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        if (btn.dataset.tier === state.sentenceBuild.tier) return;
+        state.sentenceBuild.tier = btn.dataset.tier;
+        state.sentenceBuild.current = null;
+        renderSentenceView();
       });
     });
   }

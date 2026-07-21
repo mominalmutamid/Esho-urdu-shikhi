@@ -9,7 +9,7 @@
    Tokens
      --ink          : night indigo (poetic mode, hero, nav)
      --parchment    : aged manuscript page (study / spelling / library)
-     --gold         : antique gold leaf (accents, unlock, streak)
+     --gold         : antique gold leaf (accents, unlock moments)
      --gulnar       : pomegranate red (antonyms, incorrect state)
      --zamurrud     : emerald (correct state, active nav)
    ========================================================================== */
@@ -98,8 +98,16 @@ a:focus-visible,
   direction: rtl;
   unicode-bidi: isolate;
   line-height: 1.9;
+  white-space: pre-line;
 }
 .bn-serif { font-family: var(--font-bn-serif); }
+.poet-credit {
+  font-family: var(--font-bn);
+  font-size: 0.8rem;
+  color: var(--gold);
+  font-weight: 600;
+  margin: 2px 0 10px;
+}
 
 img, svg { display: block; max-width: 100%; }
 
@@ -167,16 +175,17 @@ img, svg { display: block; max-width: 100%; }
 .nav-item {
   flex: 1;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 3px;
+  padding: 6px 2px;
   color: var(--muted-on-ink);
-  font-size: 0.62rem;
+  font-family: var(--font-bn);
+  font-size: 0.76rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
   position: relative;
   transition: color 0.2s ease;
 }
-.nav-item .nav-glyph { font-size: 1.2rem; line-height: 1; }
 .nav-item.is-active { color: var(--gold-soft); }
 .nav-item.is-active::before {
   content: "";
@@ -223,76 +232,69 @@ img, svg { display: block; max-width: 100%; }
   display: block;
   margin-top: 2px;
 }
-.streak-pill {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  background: rgba(255,255,255,0.08);
-  border: 1px solid rgba(201,162,39,0.3);
-  border-radius: 999px;
-  padding: 7px 13px;
-  font-weight: 600;
-  font-size: 0.9rem;
+/* Word-of-day heading — plain, non-absolute block (fixes the earlier
+   clipped/overlapping pill-label layout bug). */
+.wod-heading {
+  text-align: center;
+  position: relative;
+  z-index: 1;
+  margin-top: 4px;
 }
-.streak-flame { display: inline-block; }
-@keyframes flicker {
-  0%, 100% { transform: scale(1) rotate(-2deg); }
-  50% { transform: scale(1.08) rotate(2deg); }
+.wod-heading .label-bn {
+  display: inline-block;
+  font-family: var(--font-bn);
+  font-size: 0.98rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--gold-soft);
+  padding-bottom: 9px;
+  border-bottom: 1px solid rgba(201,162,39,0.4);
+  line-height: 1.4;
 }
-.streak-flame.is-active { animation: flicker 1.6s ease-in-out infinite; }
 
-/* Word-of-day seal + card */
 .wod-wrap {
   position: relative;
-  margin-top: 22px;
-  min-height: 210px;
+  margin-top: 18px;
+  min-height: 200px;
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1;
 }
-.wod-label {
-  position: absolute;
-  top: -10px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 0.72rem;
-  color: var(--gold-soft);
-  letter-spacing: 0.12em;
-  background: var(--ink);
-  padding: 2px 12px;
-  border-radius: 999px;
-  border: 1px solid rgba(201,162,39,0.35);
-}
 
 .seal {
-  width: 118px;
-  height: 118px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, var(--gold-soft), var(--gold) 55%, #8a6c17 100%);
-  box-shadow: 0 0 0 6px rgba(201,162,39,0.15), var(--shadow-ink);
+  width: 172px;
+  min-height: 150px;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(160deg, var(--gold-soft), var(--gold) 62%, #8a6c17 100%);
+  box-shadow: 0 0 0 6px rgba(201,162,39,0.14), var(--shadow-ink);
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-size: 2rem;
+  gap: 7px;
+  padding: 22px 16px;
   color: var(--ink);
   position: relative;
+  text-align: center;
+}
+.seal .seal-title {
+  font-family: var(--font-bn);
+  font-weight: 700;
+  font-size: 1.02rem;
 }
 .seal .seal-hint {
-  position: absolute;
-  bottom: -34px;
-  font-size: 0.75rem;
-  color: var(--muted-on-ink);
+  font-size: 0.8rem;
   font-weight: 500;
-  white-space: nowrap;
+  color: rgba(27,42,74,0.72);
 }
 .seal.is-cracking {
   animation: sealPulse 0.4s ease-out forwards;
 }
 @keyframes sealPulse {
   0% { transform: scale(1); }
-  40% { transform: scale(1.12); }
-  100% { transform: scale(1.28); opacity: 0; }
+  40% { transform: scale(1.08); }
+  100% { transform: scale(1.2); opacity: 0; }
 }
 
 .wod-card {
@@ -374,20 +376,10 @@ img, svg { display: block; max-width: 100%; }
   50% { box-shadow: 0 0 0 6px rgba(201,162,39,0); }
 }
 .day-chip.locked {
-  filter: blur(1.5px);
-  opacity: 0.55;
+  filter: blur(2px);
+  opacity: 0.45;
+  border-style: dashed;
   color: transparent;
-}
-.day-chip.locked::after {
-  content: "🔒";
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  filter: none;
-  font-size: 0.85rem;
-  color: var(--muted);
 }
 
 .home-section {
@@ -414,9 +406,9 @@ img, svg { display: block; max-width: 100%; }
   flex-direction: column;
   gap: 6px;
 }
-.mode-card .glyph { font-size: 1.4rem; }
 .mode-card .title { font-weight: 700; font-size: 0.88rem; color: var(--ink); }
 .mode-card .desc { font-size: 0.74rem; color: var(--muted); line-height: 1.4; }
+.mode-card.wide { grid-column: span 2; }
 
 /* --------------------------------------------------------------------------
    Shared: card lists, buttons, popovers, toasts
@@ -527,6 +519,36 @@ img, svg { display: block; max-width: 100%; }
   color: var(--gulnar);
 }
 .study-card .antonym-row .urdu { font-size: 1.1rem; }
+.study-card .speak-link { align-self: center; }
+
+.example-sentence {
+  border-top: 1px dashed var(--parchment-line);
+  padding-top: 12px;
+  margin-top: 2px;
+  text-align: center;
+}
+.example-sentence .ex-label {
+  font-size: 0.68rem;
+  color: var(--muted);
+  letter-spacing: 0.06em;
+  display: block;
+  margin-bottom: 6px;
+}
+.example-sentence .ex-urdu {
+  font-size: 1.3rem;
+  color: var(--ink);
+  margin-bottom: 4px;
+}
+.example-sentence .ex-bengali {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+.example-sentence .ex-pron {
+  font-size: 0.78rem;
+  color: var(--gold);
+  font-style: italic;
+  margin-top: 3px;
+}
 .study-nav {
   display: flex;
   align-items: center;
@@ -549,17 +571,7 @@ img, svg { display: block; max-width: 100%; }
 }
 .prompt-card .meaning { font-size: 1.15rem; font-weight: 700; margin-bottom: 4px; }
 .prompt-card .translit-hint { color: var(--muted); font-size: 0.82rem; }
-.speak-btn {
-  margin-top: 10px;
-  width: 42px; height: 42px;
-  border-radius: 50%;
-  background: var(--ink);
-  color: var(--gold-soft);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.1rem;
-}
+.prompt-card .speak-link { margin-top: 12px; }
 
 .answer-slot {
   min-height: 62px;
@@ -579,6 +591,8 @@ img, svg { display: block; max-width: 100%; }
 }
 .answer-slot.is-correct { border-color: var(--zamurrud); border-style: solid; background: rgba(31,102,80,0.06); }
 .answer-slot.is-wrong { border-color: var(--gulnar); border-style: solid; animation: shake 0.4s; }
+#sentence-panel .answer-slot { min-height: 90px; }
+#sentence-panel .answer-slot .urdu { font-size: 1.35rem; line-height: 1.7; text-align: center; }
 @keyframes shake {
   10%, 90% { transform: translateX(-2px); }
   20%, 80% { transform: translateX(4px); }
@@ -632,7 +646,7 @@ img, svg { display: block; max-width: 100%; }
   border-radius: 999px;
   overflow: hidden;
 }
-.subtab {
+.subtab, .tier-tab {
   flex: 1;
   text-align: center;
   padding: 9px 0;
@@ -640,7 +654,28 @@ img, svg { display: block; max-width: 100%; }
   font-weight: 600;
   color: var(--ink);
 }
-.subtab.is-active { background: var(--ink); color: #fff; }
+.subtab.is-active, .tier-tab.is-active { background: var(--ink); color: #fff; }
+
+.word-tile-pool {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  padding: 4px 20px 18px;
+  direction: rtl;
+}
+.word-tile {
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+  background: var(--parchment-2);
+  border: 1.5px solid var(--parchment-line);
+  font-size: 1.15rem;
+  color: var(--ink);
+  box-shadow: 0 3px 0 var(--parchment-line);
+  transition: transform 0.1s ease;
+}
+.word-tile:active { transform: translateY(2px); box-shadow: none; }
+.word-tile.is-used { opacity: 0.25; pointer-events: none; }
 
 .quiz-card {
   margin: 0 20px 14px;
@@ -756,73 +791,79 @@ img, svg { display: block; max-width: 100%; }
 .lib-card .date { font-size: 0.65rem; color: var(--gold); margin-top: 6px; }
 
 /* --------------------------------------------------------------------------
-   Visual vocabulary
+   Text-based audio button (replaces the old icon speaker button everywhere)
    -------------------------------------------------------------------------- */
-.scene-tabs { display: flex; gap: 8px; padding: 4px 20px 12px; }
-.scene-tab {
-  flex: 1;
-  padding: 10px;
-  text-align: center;
-  border-radius: var(--radius-sm);
-  border: 1.5px solid var(--parchment-line);
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--muted);
-  background: var(--parchment-2);
+.speak-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-bn);
+  font-weight: 700;
+  font-size: 0.82rem;
+  letter-spacing: 0.02em;
+  color: var(--ink);
+  background: transparent;
+  border: 1.5px solid var(--ink);
+  border-radius: 999px;
+  padding: 8px 18px;
 }
-.scene-tab.is-active { background: var(--ink); color: #fff; border-color: var(--ink); }
+.speak-link:active { background: var(--ink); color: #fff; }
+.speak-link.on-dark {
+  color: var(--gold-soft);
+  border-color: rgba(228,199,105,0.5);
+}
+.speak-link.on-dark:active { background: rgba(228,199,105,0.15); }
 
-.scene-stage {
-  position: relative;
-  margin: 0 20px 16px;
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  aspect-ratio: 4 / 5;
-  box-shadow: var(--shadow-card);
-}
-.scene-stage svg { width: 100%; height: 100%; }
-.hotspot {
-  position: absolute;
-  width: 34px; height: 34px;
-  margin: -17px 0 0 -17px;
-  border-radius: 50%;
-  background: rgba(201,162,39,0.85);
-  border: 2px solid #fff;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.35);
+/* Mode-card text badge — replaces the old emoji glyph */
+.mode-badge {
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-sm);
+  background: var(--ink);
+  color: var(--gold-soft);
+  font-family: var(--font-bn);
+  font-weight: 700;
+  font-size: 0.92rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--ink);
-  font-size: 0.95rem;
-  font-weight: 700;
-  animation: hotspotPulse 2.2s ease-in-out infinite;
 }
-@keyframes hotspotPulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(201,162,39,0.5), 0 2px 8px rgba(0,0,0,0.35); }
-  50% { box-shadow: 0 0 0 8px rgba(201,162,39,0), 0 2px 8px rgba(0,0,0,0.35); }
-}
-.hotspot.is-seen { background: rgba(31,102,80,0.85); }
 
-.scene-popover-backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(20,25,40,0.55);
-  z-index: 70;
-  display: flex;
-  align-items: flex-end;
+/* Locked-state text tag */
+.locked-tag {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  border: 1px solid var(--parchment-line);
+  border-radius: 999px;
+  padding: 2px 9px;
 }
-.scene-popover {
-  width: 100%;
+
+/* --------------------------------------------------------------------------
+   Urdu Alphabet Mode
+   -------------------------------------------------------------------------- */
+.alphabet-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  padding: 4px 20px 20px;
+}
+.alphabet-cell {
   background: var(--parchment-2);
-  border-radius: 22px 22px 0 0;
-  padding: 22px 22px calc(22px + var(--safe-b));
+  border: 1px solid var(--parchment-line);
+  border-radius: var(--radius-md);
+  padding: 16px 10px 14px;
   text-align: center;
-  animation: sheetUp 0.28s ease-out;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
 }
-@keyframes sheetUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-.scene-popover .urdu-display { font-size: 2.2rem; color: var(--ink); }
-.scene-popover .meaning { font-size: 1.1rem; font-weight: 700; margin: 8px 0 4px; }
-.scene-popover .translit { color: var(--muted); font-size: 0.85rem; margin-bottom: 16px; }
+.alphabet-cell .urdu { font-size: 2rem; color: var(--ink); line-height: 1; }
+.alphabet-cell .name-bn { font-weight: 700; font-size: 0.85rem; color: var(--ink); }
+.alphabet-cell .sound-bn { font-size: 0.68rem; color: var(--muted); line-height: 1.4; min-height: 2.4em; }
+.alphabet-cell .speak-link { padding: 6px 14px; font-size: 0.72rem; margin-top: 2px; }
 
 /* --------------------------------------------------------------------------
    Reduced motion
