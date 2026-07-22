@@ -10,7 +10,7 @@
      0. Config & storage keys
      ------------------------------------------------------------------------ */
   const STORAGE_KEY = 'euk_progress_v1';
-  const DATA_URL = './data/words.json';
+  const DATA_URL = './words.json';
 
   const DEFAULT_PROGRESS = () => ({
     installDate: todayStr(),
@@ -831,7 +831,7 @@
     document.getElementById('app').innerHTML = `
       <div style="padding:40px 24px;text-align:center;font-family:sans-serif;color:#1B2A4A">
         <h2>শব্দভাণ্ডার লোড করা যায়নি</h2>
-        <p style="color:#746B58;margin:10px 0 20px">অ্যাপটি ইন্টারনেট সংযোগ ছাড়া প্রথমবার খোলা যাবে না, অথবা data/words.json ফাইলটি খুঁজে পাওয়া যায়নি।</p>
+        <p style="color:#746B58;margin:10px 0 20px">অ্যাপটি ইন্টারনেট সংযোগ ছাড়া প্রথমবার খোলা যাবে না, অথবা words.json ফাইলটি খুঁজে পাওয়া যায়নি।</p>
         <button onclick="location.reload()" style="padding:12px 22px;border-radius:8px;background:#1B2A4A;color:#fff;border:none;font-weight:600">আবার চেষ্টা করো</button>
       </div>`;
   }

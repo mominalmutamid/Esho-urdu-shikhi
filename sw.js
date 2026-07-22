@@ -1,30 +1,29 @@
 /*
   Service worker for এসো উর্দু শিখি
   ------------------------------------------------------------------------
-  Structure (back to split files, since the real problem was GitHub's
-  drag-and-drop uploader flattening folders — not the folders themselves):
+  Flat structure — every file sits at the repo root, no subfolders at all,
+  so uploading from a phone (where folder structure can't be preserved)
+  just means selecting all these files at once:
 
-    index.html            app shell (HTML, references css/js below)
-    css/style.css
-    js/app.js
-    data/words.json         <- grows freely, no effect on shell size
-    manifest.json           <- icons embedded as base64, no icon files needed
-    sw.js                    <- this file
+    index.html
+    style.css
+    app.js
+    words.json     <- grows freely, the file you'll replace most often
+    manifest.json
+    sw.js            <- this file
 
-  Strategy: NETWORK-FIRST for every one of the files above, falling back to
-  cache only when offline. This means updating ANY file — the dictionary,
-  the styling, the logic — just means replacing that one file and
-  re-uploading. No cache-version bump needed, no waiting, nothing else to
-  touch here.
+  Strategy: NETWORK-FIRST for every file above, falling back to cache only
+  when offline. Updating any one file — most often words.json — just means
+  replacing that file and re-uploading. No cache-version bump needed.
 */
 
-const CACHE_NAME = 'esho-urdu-shell-v3';
+const CACHE_NAME = 'esho-urdu-shell-v4';
 const SHELL_FILES = [
   './',
   './index.html',
-  './css/style.css',
-  './js/app.js',
-  './data/words.json',
+  './style.css',
+  './app.js',
+  './words.json',
   './manifest.json'
 ];
 
